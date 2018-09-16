@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PonyChallenge.Views;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -11,7 +12,7 @@ namespace PonyChallenge
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            MainPage = new NewMazePage();
         }
 
         protected override void OnStart()
