@@ -8,6 +8,8 @@ namespace PonyChallenge.Services
 {
     interface IPonyMazeService
     {
-        Task<Maze> CreateMaze(Maze maze);
+        Task<Maze> CreateMaze(int width, int height, string playerName, int difficulty);
+        Task<MazeSnapshot> GetSnapshot(string mazeId);
+        Task Move(string mazeId, string direction);
     }
 }
