@@ -6,14 +6,14 @@ namespace PonyChallenge.Models
 {
     public class Maze
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = null;
 
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int Width { get; set; } = 18;
+        public int Height { get; set; } = 22;
 
-        public string PlayerName { get; set; }
+        public string PlayerName { get; set; } = "Rarity";
 
-        public int Difficulty { get; set; }
+        public int Difficulty { get; set; } = 0;
 
         public MazeSnapshot Positions { get; set; } = null;
     }

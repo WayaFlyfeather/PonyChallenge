@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PonyChallenge.Services
 {
-    interface IPonyMazeService
+    public interface IPonyMazeService
     {
         Task<Maze> CreateMaze(int width, int height, string playerName, int difficulty);
         Task<MazeSnapshot> GetSnapshot(string mazeId);

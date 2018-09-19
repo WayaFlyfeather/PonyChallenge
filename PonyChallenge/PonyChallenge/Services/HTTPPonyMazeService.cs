@@ -2,6 +2,7 @@
 using PonyChallenge.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace PonyChallenge.Services
 
         private class TMazeIDResponse
         {
-            [JsonProperty("maze-id")]
+            [JsonProperty("maze_id")]
             public string MazeID { get; set; }
         }
 
@@ -45,6 +46,7 @@ namespace PonyChallenge.Services
         {
             public int[] pony { get; set; }
             public int[] domokun { get; set; }
+            [JsonProperty("end-point")]
             public int[] endpoint { get; set; }
             public int[] size { get; set; }
             public int difficulty { get; set; }
@@ -81,12 +83,17 @@ namespace PonyChallenge.Services
                 Difficulty = difficulty
             };
 
-            StringContent postContent = new StringContent(JsonConvert.SerializeObject(mazeDef), Encoding.UTF8, "application/jason");
+            String json = JsonConvert.SerializeObject(mazeDef);
+            Debug.WriteLine("Request json: " + json);
+            StringContent postContent = new StringContent(json, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.PostAsync("/pony-challenge/maze", postContent);
 
             if (response.IsSuccessStatusCode)
             {
-                TMazeIDResponse mazeIdResponse = JsonConvert.DeserializeObject<TMazeIDResponse>(await response.Content.ReadAsStringAsync());
+                String jsonret = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine("Response json: " + jsonret);
+                TMazeIDResponse mazeIdResponse = JsonConvert.DeserializeObject<TMazeIDResponse>(jsonret);
+                Debug.WriteLine("ID: " + mazeIdResponse.MazeID);
 
                 return new Maze()
                 {
@@ -103,7 +110,11 @@ namespace PonyChallenge.Services
         async Task<MazeSnapshot> IPonyMazeService.GetSnapshot(string mazeId)
         {
             string snapshotString = await client.GetStringAsync("/pony-challenge/maze/" + mazeId);
+            Debug.WriteLine("SnapLength: " + snapshotString.Length);
+            Debug.WriteLine("Snap: " + snapshotString);
             TMazeSnapshot snapshot = JsonConvert.DeserializeObject<TMazeSnapshot>(snapshotString);
+            if (snapshot is null)
+                throw new ApplicationException("Could not deserialize snapshot: " + snapshotString);
 
             int width = snapshot.size[0];
             int height = snapshot.size[1];
@@ -130,7 +141,8 @@ namespace PonyChallenge.Services
             for (int idx = 0; idx < width * height; idx++)
             {
                 int x = idx % width;
-                int y = idx % width;
+                int y = idx / width;
+                result.Locations[x, y] = new MazeLocation();
                 foreach (string wall in snapshot.data[idx])
                 {
                     if (wall=="north")

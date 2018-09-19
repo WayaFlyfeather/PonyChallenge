@@ -1,4 +1,6 @@
-﻿using PonyChallenge.Views;
+﻿using PonyChallenge.Services;
+using PonyChallenge.ViewModels;
+using PonyChallenge.Views;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -8,11 +10,13 @@ namespace PonyChallenge
 {
     public partial class App : Application
     {
+        readonly public IPonyMazeService PonyMazeService = new HTTPPonyMazeService();
+
         public App()
         {
             InitializeComponent();
 
-            MainPage = new NewMazePage();
+            MainPage = new NewMazePage() { BindingContext = new PonyMazeViewModel() };
         }
 
         protected override void OnStart()
