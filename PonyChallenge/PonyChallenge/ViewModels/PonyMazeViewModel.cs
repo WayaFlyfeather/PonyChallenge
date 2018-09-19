@@ -85,6 +85,8 @@ namespace PonyChallenge.ViewModels
             }
         }
 
+        public string Specs => String.Format($"{Width},{Height} {SelectedPonyName} ({SelectedDifficulty})");
+
         public bool IsValid
         {
             get
