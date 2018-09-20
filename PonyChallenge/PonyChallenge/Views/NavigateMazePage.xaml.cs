@@ -14,39 +14,62 @@ namespace PonyChallenge.Views
 	public partial class NavigateMazePage : ContentPage
 	{
         PonyMazeViewModel vm => BindingContext as PonyMazeViewModel;
+        PonyMazeViewModel prevVM = null;
 
         public NavigateMazePage ()
 		{
 			InitializeComponent ();
+            prevVM = vm;
             if (vm != null)
+            {
+                vm.PropertyChanged += VM_PropertyChanged;
                 buildMaze();
+            }
 		}
 
         protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
+            if (prevVM != null)
+                prevVM.PropertyChanged -= VM_PropertyChanged;
             if (vm != null)
-                buildMaze();
+                vm.PropertyChanged += VM_PropertyChanged;
+            prevVM = vm;
+            buildMaze();
         }
+
+        private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (String.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(PonyMazeViewModel.LatestSnapshot))
+            {
+                buildMaze();
+            }
+        }
+
 
         void buildMaze()
         {
-            for (int y=0; y<vm.Model.Height; y++)
+            TheMaze.Children.Clear();
+
+            if (vm?.LatestSnapshot != null)
             {
-                StackLayout row = new StackLayout();
-                row.HorizontalOptions = LayoutOptions.Fill;
-                row.VerticalOptions = LayoutOptions.FillAndExpand;
-                row.Spacing = 0;
-                row.Orientation = StackOrientation.Horizontal;
-                for (int x=0; x < vm.Model.Width; x++)
+                for (int y = 0; y < vm.Model.Height; y++)
                 {
-                    MazeLocationView locationView = new MazeLocationView()
+                    StackLayout row = new StackLayout();
+                    row.HorizontalOptions = LayoutOptions.Fill;
+                    row.VerticalOptions = LayoutOptions.FillAndExpand;
+                    row.Spacing = 0;
+                    row.Orientation = StackOrientation.Horizontal;
+                    for (int x = 0; x < vm.Model.Width; x++)
                     {
-                        BindingContext = new MazeLocationViewModel(vm.Model.Positions.Locations[x, y]),
-                    };
-                    row.Children.Add(locationView);
+                        MazeLocationView locationView = new MazeLocationView()
+                        {
+                            BindingContext = new MazeLocationViewModel(vm.Model.Positions.Locations[x, y]),
+                        };
+                        row.Children.Add(locationView);
+                    }
+                    TheMaze.Children.Add(row);
                 }
-                TheMaze.Children.Add(row);
             }
         }
 	}

@@ -26,7 +26,7 @@
     <ContentView Grid.Column="2" Grid.Row="2" IsVisible="{Binding SouthEastCorner}" BackgroundColor="Black" HorizontalOptions="Fill" VerticalOptions="Fill" />
     <StackLayout Grid.Row="1" Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Fill" Padding="4">
         <ContentView BackgroundColor="Green" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsVisible="{Binding IsExit}" />
-        <ContentView BackgroundColor="Pink" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsVisible="{Binding ContainsPony}" />
+        <ContentView BackgroundColor="Azure" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsVisible="{Binding ContainsPony}" />
         <ContentView BackgroundColor="Brown" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsVisible="{Binding ContainsDomokun}" />
     </StackLayout>
 </Grid>

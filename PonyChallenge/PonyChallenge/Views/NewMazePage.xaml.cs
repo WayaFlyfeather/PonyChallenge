@@ -25,9 +25,9 @@ namespace PonyChallenge.Views
 
         private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (String.IsNullOrEmpty(e.PropertyName) || e.PropertyName==nameof(PonyMazeViewModel.Model))
+            if (String.IsNullOrEmpty(e.PropertyName) || e.PropertyName==nameof(PonyMazeViewModel.LatestSnapshot))
             {
-                if (vm.Model.Positions != null)
+                if (vm.LatestSnapshot != null)
                     App.Current.MainPage = new NavigateMazePage() { BindingContext = vm };
             }
         }

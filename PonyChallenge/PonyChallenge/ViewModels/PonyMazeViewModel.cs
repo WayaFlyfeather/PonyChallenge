@@ -1,8 +1,10 @@
 ﻿using PonyChallenge.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace PonyChallenge.ViewModels
@@ -28,7 +30,7 @@ namespace PonyChallenge.ViewModels
             get => model.PlayerName;
             set
             {
-                if (model.PlayerName!=value)
+                if (model.PlayerName != value)
                 {
                     model.PlayerName = value;
                     OnPropertyChanged();
@@ -60,7 +62,7 @@ namespace PonyChallenge.ViewModels
             get => model.Width;
             set
             {
-                if (model.Width!=value)
+                if (model.Width != value)
                 {
                     model.Width = value;
                     OnPropertyChanged();
@@ -81,6 +83,31 @@ namespace PonyChallenge.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsValid));
                     createMazeCommand?.ChangeCanExecute();
+                }
+            }
+        }
+
+        public MazeSnapshot LatestSnapshot
+        {
+            get => model.Positions;
+            set
+            {
+                if (model.Positions != value)
+                {
+                    model.Positions = value;                    
+                    OnPropertyChanged();
+                    BestNextMove = null;
+
+                    if (model.Positions!=null)
+                    {
+                        Task.Run(() =>
+                        {
+                            Debug.WriteLine("Starting to find next move");
+                            int? nextMove = findDirection();
+                            Device.BeginInvokeOnMainThread(() => { BestNextMove = nextMove; });
+                            Debug.WriteLine("Next move determined");
+                        });
+                    }
                 }
             }
         }
@@ -115,13 +142,11 @@ namespace PonyChallenge.ViewModels
             try
             {
 
-//                Maze newMaze = await ((App)App.Current).PonyMazeService.CreateMaze(model.Width, model.Height, model.PlayerName, model.Difficulty);
-                Maze newMaze = new Maze() { Width = Model.Width, Height = Model.Height, PlayerName = Model.PlayerName, Difficulty = Model.Difficulty, Id = "df5392d2-3d35-4287-9ffd-5d20e59f3f11" };
-//                Debug.WriteLine("Maze created, id: " + newMaze.Id);
-                newMaze.Positions = await ((App)App.Current).PonyMazeService.GetSnapshot(newMaze.Id);
-                Debug.WriteLine("Got positions for Maze " + newMaze.Id);
-                Model = newMaze;
+                //                Model = await ((App)App.Current).PonyMazeService.CreateMaze(model.Width, model.Height, model.PlayerName, model.Difficulty);
+                Model = new Maze() { Width = Model.Width, Height = Model.Height, PlayerName = Model.PlayerName, Difficulty = Model.Difficulty, Id = "df5392d2-3d35-4287-9ffd-5d20e59f3f11" };
+                //                Debug.WriteLine("Maze created, id: " + newMaze.Id);
                 createMazeCommand.ChangeCanExecute();
+                LatestSnapshot = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
             }
             catch (Exception ex)
             {
@@ -129,8 +154,179 @@ namespace PonyChallenge.ViewModels
             }
         }
 
+
+        private int? bestNextMove;
+        public int? BestNextMove
+        {
+            get => bestNextMove;
+            set
+            {
+                if (SetProperty(ref bestNextMove, value))
+                {
+                    OnPropertyChanged(nameof(HasBestNextMove));
+                    makeAutoMoveCommand?.ChangeCanExecute();
+                }
+            }
+        }
+
+        public bool HasBestNextMove => bestNextMove.HasValue;
+
         private Command createMazeCommand;
         public System.Windows.Input.ICommand CreateMazeCommand => createMazeCommand ?? (createMazeCommand = new Command(createMaze_Execute, createMaze_CanExecute));
 
+
+        bool makeAutoMove_CanExecute()
+        {
+            return HasBestNextMove;
+        }
+
+        async void makeAutoMove_Execute()
+        {
+            if (!BestNextMove.HasValue)
+                return;
+
+            makeMockMove(BestNextMove.Value);
+            MazeSnapshot temp = LatestSnapshot;
+            LatestSnapshot = null;
+            await Task.Delay(50);
+            LatestSnapshot = temp;
+        }
+
+        void makeMockMove(int direction)
+        {
+            model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y].ContainsPony = false;
+            switch (direction)
+            {
+                case 0: model.Positions.PonyPlacement = model.Positions.PonyPlacement.NorthOf; break;
+                case 1: model.Positions.PonyPlacement = model.Positions.PonyPlacement.EastOf; break;
+                case 2: model.Positions.PonyPlacement = model.Positions.PonyPlacement.SouthOf; break;
+                case 3: model.Positions.PonyPlacement = model.Positions.PonyPlacement.WestOf; break;
+                default: break;
+            }
+            model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y].ContainsPony = true;
+        }
+
+        private Command makeAutoMoveCommand;
+        public System.Windows.Input.ICommand MakeAutoMoveCommand => makeAutoMoveCommand ?? (makeAutoMoveCommand = new Command(makeAutoMove_Execute, makeAutoMove_CanExecute));
+
+        class StepTracker
+        {
+            BitArray[] rows;
+
+            public StepTracker(int width, int height)
+            {
+                rows = new BitArray[height];
+                for (int r = 0; r < height; r++)
+                    rows[r] = new BitArray(width, false);
+            }
+
+            StepTracker(StepTracker other)
+            {
+                rows = new BitArray[other.rows.Length];
+                for (int r = 0; r < other.rows.Length; r++)
+                    rows[r] = (BitArray)other.rows[r].Clone();
+            }
+
+            public bool HasStepped(MazePoint position)
+            {
+                return rows[position.Y][position.X];
+            }
+
+            public StepTracker Clone()
+            {
+                return new StepTracker(this);
+            }
+
+            public void MarkStep(MazePoint position)
+            {
+                rows[position.Y][position.X] = true;
+            }
+        }
+    
+        int? stepsToExit(MazePoint position, int stepCount, StepTracker tracks)
+        {
+            if (tracks.HasStepped(position))
+                return null;
+
+            MazeLocation thisLocation = model.Positions.Locations[position.X, position.Y];
+            if (thisLocation.IsExit)
+                return stepCount;
+
+            //if (thisLocation.ContainsDomokun)
+            //    return null;
+
+            int? bestResult = null;
+
+            StepTracker newTracks = tracks.Clone();
+
+            newTracks.MarkStep(position);
+
+            if (!thisLocation.NorthWall)
+                bestResult = stepsToExit(position.NorthOf, stepCount + 1, newTracks);
+
+            if (!thisLocation.EastWall)
+            {
+                int? eastResult= stepsToExit(position.EastOf, stepCount + 1, newTracks);
+                if (!bestResult.HasValue || (eastResult.HasValue && eastResult.Value < bestResult.Value))
+                    bestResult = eastResult;
+            }
+
+            if (!thisLocation.SouthWall)
+            {
+                int? southResult = stepsToExit(position.SouthOf, stepCount + 1, newTracks);
+                if (!bestResult.HasValue || (southResult.HasValue && southResult.Value < bestResult.Value))
+                    bestResult = southResult;
+            }
+
+            if (!thisLocation.WestWall)
+            {
+                int? westResult = stepsToExit(position.WestOf, stepCount + 1, newTracks);
+                if (!bestResult.HasValue || (westResult.HasValue && westResult.Value < bestResult.Value))
+                    bestResult = westResult;
+            }
+
+            return bestResult;
+        }
+
+        int findDirection()
+        {
+            int?[] directionResults = new int?[4];
+
+            MazeLocation thisLocation = model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y];
+            StepTracker tracker = new StepTracker(model.Width, model.Height);
+            tracker.MarkStep(model.Positions.PonyPlacement);
+
+            directionResults[0] = thisLocation.NorthWall ? null : stepsToExit(model.Positions.PonyPlacement.NorthOf, 1, tracker);
+            directionResults[1] = thisLocation.EastWall ? null : stepsToExit(model.Positions.PonyPlacement.EastOf, 1, tracker);
+            directionResults[2] = thisLocation.SouthWall ? null : stepsToExit(model.Positions.PonyPlacement.SouthOf, 1, tracker);
+            directionResults[3] = thisLocation.WestWall ? null : stepsToExit(model.Positions.PonyPlacement.WestOf, 1, tracker);
+
+            int bestIndex = 0;
+
+            for (int idx=1; idx < 4; idx++)
+            {
+                if (!directionResults[bestIndex].HasValue || (directionResults[idx].HasValue && directionResults[idx]<directionResults[bestIndex]))
+                {
+                    bestIndex = idx;
+                }
+            }
+
+            if (directionResults[bestIndex].HasValue)
+                return bestIndex;
+            else
+            {
+                Debug.WriteLine("All directions leads to null, finding first legal");
+                if (!thisLocation.NorthWall)
+                    return 0;
+                if (!thisLocation.EastWall)
+                    return 1;
+                if (!thisLocation.SouthWall)
+                    return 2;
+                if (!thisLocation.WestWall)
+                    return 3;
+            }
+
+            throw new ApplicationException("findDirection: Should not make it here.");
+        }
     }
 }

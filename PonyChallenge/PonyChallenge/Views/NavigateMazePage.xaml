@@ -8,6 +8,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -20,6 +21,7 @@
             <Frame Padding="0" OutlineColor="Black" CornerRadius="0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" VerticalOptions="Fill" Margin="3"  BackgroundColor="LightGray">
                 <StackLayout x:Name="TheMaze" Spacing="0" HorizontalOptions="Fill" VerticalOptions="Fill" />
             </Frame>
+            <Button Grid.Row="3" Grid.Column="1" HorizontalOptions="Fill" Text="Auto Move" Command="{Binding MakeAutoMoveCommand}" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -158,13 +158,13 @@ namespace PonyChallenge.Services
                         if (x > 0)
                             result.Locations[x - 1, y].EastWall = true;
                     }
-
-                    if (x == width - 1)
-                        result.Locations[x, y].EastWall = true;
-
-                    if (y == height - 1)
-                        result.Locations[x, y].SouthWall = true;
                 }
+
+                if (x == width - 1)
+                    result.Locations[x, y].EastWall = true;
+
+                if (y == height - 1)
+                    result.Locations[x, y].SouthWall = true;
             }
 
             result.Locations[result.DomokunPlacement.X, result.DomokunPlacement.Y].ContainsDomokun = true;
