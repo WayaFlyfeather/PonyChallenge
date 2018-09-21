@@ -249,15 +249,15 @@ namespace PonyChallenge.ViewModels
                 return;
 
             await makeMove(BestNextMove.Value);
-            //MazeSnapshot temp = LatestSnapshot;
-            //LatestSnapshot = null;
-            //await Task.Delay(50);
-            //LatestSnapshot = temp;
         }
+
+        readonly string[] directionNames = { "north", "east", "south", "west" };
 
         async Task makeMove(int direction)
         {
-            await makeMockMove(direction);
+            await ((App)App.Current).PonyMazeService.Move(Model.Id, directionNames[direction]);
+            LatestSnapshot = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
+
             lastMove = DateTimeOffset.Now;
         }
 
@@ -270,23 +270,23 @@ namespace PonyChallenge.ViewModels
             return !ponyLocation.Walls[direction];
         }
 
-        async Task makeMockMove(int direction)
-        {
-            model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y].ContainsPony = false;
-            switch (direction)
-            {
-                case 0: model.Positions.PonyPlacement = model.Positions.PonyPlacement.NorthOf; break;
-                case 1: model.Positions.PonyPlacement = model.Positions.PonyPlacement.EastOf; break;
-                case 2: model.Positions.PonyPlacement = model.Positions.PonyPlacement.SouthOf; break;
-                case 3: model.Positions.PonyPlacement = model.Positions.PonyPlacement.WestOf; break;
-                default: break;
-            }
-            model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y].ContainsPony = true;
-            MazeSnapshot temp = LatestSnapshot;
-            LatestSnapshot = null;
-            await Task.Delay(5);
-            LatestSnapshot = temp;
-        }
+        //async Task makeMockMove(int direction)
+        //{
+        //    model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y].ContainsPony = false;
+        //    switch (direction)
+        //    {
+        //        case 0: model.Positions.PonyPlacement = model.Positions.PonyPlacement.NorthOf; break;
+        //        case 1: model.Positions.PonyPlacement = model.Positions.PonyPlacement.EastOf; break;
+        //        case 2: model.Positions.PonyPlacement = model.Positions.PonyPlacement.SouthOf; break;
+        //        case 3: model.Positions.PonyPlacement = model.Positions.PonyPlacement.WestOf; break;
+        //        default: break;
+        //    }
+        //    model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y].ContainsPony = true;
+        //    MazeSnapshot temp = LatestSnapshot;
+        //    LatestSnapshot = null;
+        //    await Task.Delay(5);
+        //    LatestSnapshot = temp;
+        //}
 
         class StepTracker
         {

@@ -57,12 +57,13 @@ namespace PonyChallenge.Services
 
         private class TMove
         {
-            public string Direction { get; set; }
+            public string direction { get; set; }
         }
 
         private class TMoveState
         {
             public string state { get; set; }
+            [JsonProperty("state-result")]
             public string stateresult { get; set; }
         }
 
@@ -178,16 +179,18 @@ namespace PonyChallenge.Services
         {
             TMove move = new TMove()
             {
-                Direction=direction
+                direction=direction
             };
 
-            StringContent postContent = new StringContent(JsonConvert.SerializeObject(move), Encoding.UTF8, "application/jason");
+            string moveJson = JsonConvert.SerializeObject(move);
+            Debug.WriteLine("Move Json: " + moveJson);
+            StringContent postContent = new StringContent(moveJson, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.PostAsync("/pony-challenge/maze/" + mazeId, postContent);
 
             if (response.IsSuccessStatusCode)
             {
                 TMoveState moveResponse = JsonConvert.DeserializeObject<TMoveState>(await response.Content.ReadAsStringAsync());
-
+                Debug.WriteLine("Move response: " + moveResponse.state + "/" + moveResponse.stateresult);
                 return;
             }
             throw new ApplicationException("Response unsuccessful: " + response.StatusCode.ToString());
