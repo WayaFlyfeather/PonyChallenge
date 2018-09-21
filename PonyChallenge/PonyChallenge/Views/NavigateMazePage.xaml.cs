@@ -17,25 +17,24 @@ namespace PonyChallenge.Views
 	public partial class NavigateMazePage : ContentPage
 	{
         PonyMazeViewModel vm => BindingContext as PonyMazeViewModel;
-        PonyMazeViewModel prevVM = null;
 
         public NavigateMazePage ()
 		{
 			InitializeComponent ();
-            prevVM = vm;
-            if (vm != null)
-                vm.PropertyChanged += VM_PropertyChanged;
 		}
 
-        protected override void OnBindingContextChanged()
+        protected override void OnAppearing()
         {
-            base.OnBindingContextChanged();
-            if (prevVM != null)
-                prevVM.PropertyChanged -= VM_PropertyChanged;
-            if (vm != null)
-                vm.PropertyChanged += VM_PropertyChanged;
-            prevVM = vm;
-            MazeCanvas.InvalidateSurface();
+            base.OnAppearing();
+            vm.PropertyChanged += VM_PropertyChanged;
+            vm.StartTick();
+        }
+
+        protected override void OnDisappearing()
+        {
+            vm.PropertyChanged -= VM_PropertyChanged;
+            vm.StopTick();
+            base.OnDisappearing();
         }
 
         private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

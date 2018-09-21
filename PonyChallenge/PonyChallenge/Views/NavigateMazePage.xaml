@@ -1,8 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:PonyChallenge.Converters"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              x:Class="PonyChallenge.Views.NavigateMazePage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:BooleanNegationConverter x:Key="BooleanNegationConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid VerticalOptions="Fill">
             <Grid.RowDefinitions>
@@ -19,11 +25,29 @@
             <Label Grid.Row="0" Grid.Column="1" Text="{Binding Model.Id}" />
             <Label Grid.Row="1" Grid.Column="0" Text="Specs" />
             <Label Grid.Row="1" Grid.Column="1" Text="{Binding Specs}" />
-            <skia:SKCanvasView x:Name="MazeCanvas" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" VerticalOptions="Fill" Margin="3" PaintSurface="OnMazeCanvasPaintSurface" />
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" VerticalOptions="Fill">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="9*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="9*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Row="0" Grid.Column="1"  Text="N" Command="{Binding MoveDirectionCommand}" CommandParameter="0" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                <Button Grid.Row="1" Grid.Column="0"  Text="W" Command="{Binding MoveDirectionCommand}" CommandParameter="3" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                <Button Grid.Row="1" Grid.Column="2"  Text="E" Command="{Binding MoveDirectionCommand}" CommandParameter="1" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                <Button Grid.Row="2" Grid.Column="1"  Text="S" Command="{Binding MoveDirectionCommand}" CommandParameter="2" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                <skia:SKCanvasView x:Name="MazeCanvas" Grid.Row="1" Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Fill" PaintSurface="OnMazeCanvasPaintSurface" />
+            </Grid>
             <!--<Frame Padding="0" OutlineColor="Black" CornerRadius="0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" VerticalOptions="Fill" Margin="3"  BackgroundColor="LightGray">
                 <StackLayout x:Name="TheMaze" Spacing="0" HorizontalOptions="Fill" VerticalOptions="Fill" />
             </Frame>-->
-            <Button Grid.Row="3" Grid.Column="1" HorizontalOptions="Fill" Text="Auto Move" Command="{Binding MakeAutoMoveCommand}" />
+            <Button Grid.Row="3" Grid.Column="0" HorizontalOptions="Fill" Text="Single Auto Move" Command="{Binding MakeAutoMoveCommand}" />
+            <Button Grid.Row="3" Grid.Column="1" HorizontalOptions="Fill" Text="Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
+            <Button Grid.Row="3" Grid.Column="1" HorizontalOptions="Fill" Text="Stop Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

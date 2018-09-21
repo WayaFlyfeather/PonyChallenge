@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace PonyChallenge.ViewModels
@@ -97,7 +98,7 @@ namespace PonyChallenge.ViewModels
                     model.Positions = value;                    
                     OnPropertyChanged();
                     BestNextMove = null;
-
+                    moveDirectionCommand.ChangeCanExecute();
                     if (model.Positions!=null)
                     {
                         Task.Run(() =>
@@ -155,6 +156,13 @@ namespace PonyChallenge.ViewModels
         }
 
 
+        private bool makeRepeatingAutoMoves;
+        public bool MakeRepeatingAutoMoves
+        {
+            get => makeRepeatingAutoMoves;
+            set => SetProperty(ref makeRepeatingAutoMoves, value);
+        }
+
         private int? bestNextMove;
         public int? BestNextMove
         {
@@ -172,27 +180,97 @@ namespace PonyChallenge.ViewModels
         public bool HasBestNextMove => bestNextMove.HasValue;
 
         private Command createMazeCommand;
-        public System.Windows.Input.ICommand CreateMazeCommand => createMazeCommand ?? (createMazeCommand = new Command(createMaze_Execute, createMaze_CanExecute));
+        public ICommand CreateMazeCommand => createMazeCommand ?? (createMazeCommand = new Command(createMaze_Execute, createMaze_CanExecute));
 
+        private Command makeAutoMoveCommand;
+        public ICommand MakeAutoMoveCommand => makeAutoMoveCommand ?? (makeAutoMoveCommand = new Command(makeAutoMove_Execute, makeAutoMove_CanExecute));
+
+        private Command switchRepeatAutoMoveCommand;
+        public ICommand SwitchRepeatAutoMoveCommand => switchRepeatAutoMoveCommand ?? (switchRepeatAutoMoveCommand = new Command(() => MakeRepeatingAutoMoves = !MakeRepeatingAutoMoves));
+
+        private Command<string> moveDirectionCommand;
+        public ICommand MoveDirectionCommand => moveDirectionCommand ?? (moveDirectionCommand = new Command<string>(async (directionString) => { MakeRepeatingAutoMoves = false; await makeMove(int.Parse(directionString)); }, (directionString) => canPonyMoveInDirection(int.Parse(directionString))));
 
         bool makeAutoMove_CanExecute()
         {
             return HasBestNextMove;
         }
 
+        DateTimeOffset lastMove = DateTimeOffset.Now;
+        TimeSpan minDelay = TimeSpan.FromMilliseconds(1000);
+
+        bool timerStop = false;
+
+        public void StartTick()
+        {
+            timerStop = false;
+            Device.StartTimer(TimeSpan.FromMilliseconds(200), tick);
+        }
+
+        public void StopTick()
+        {
+            timerStop = true;
+        }
+
+        bool tick()
+        {
+            if (timerStop)
+            {
+                Debug.WriteLine("Timerstop!");
+                return false;
+            }
+
+            try
+            {
+                if (MakeRepeatingAutoMoves)
+                {
+                    if (BestNextMove.HasValue)
+                    {
+                        if (DateTimeOffset.Now > lastMove + minDelay)
+                        {
+                            lastMove = DateTimeOffset.Now;
+                            Device.BeginInvokeOnMainThread(async () => { if (BestNextMove.HasValue) await makeMove(BestNextMove.Value); });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Exception in timer " + ex.Message);
+            }
+
+            return !timerStop;
+        }
+
         async void makeAutoMove_Execute()
         {
+            MakeRepeatingAutoMoves = false;
             if (!BestNextMove.HasValue)
                 return;
 
-            makeMockMove(BestNextMove.Value);
-            MazeSnapshot temp = LatestSnapshot;
-            LatestSnapshot = null;
-            await Task.Delay(50);
-            LatestSnapshot = temp;
+            await makeMove(BestNextMove.Value);
+            //MazeSnapshot temp = LatestSnapshot;
+            //LatestSnapshot = null;
+            //await Task.Delay(50);
+            //LatestSnapshot = temp;
         }
 
-        void makeMockMove(int direction)
+        async Task makeMove(int direction)
+        {
+            await makeMockMove(direction);
+            lastMove = DateTimeOffset.Now;
+        }
+
+        bool canPonyMoveInDirection(int direction)
+        {
+            MazeLocation ponyLocation = LatestSnapshot?.Locations[LatestSnapshot.PonyPlacement.X, LatestSnapshot.PonyPlacement.Y];
+            if (ponyLocation is null)
+                return false;
+
+            return !ponyLocation.Walls[direction];
+        }
+
+        async Task makeMockMove(int direction)
         {
             model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y].ContainsPony = false;
             switch (direction)
@@ -204,10 +282,11 @@ namespace PonyChallenge.ViewModels
                 default: break;
             }
             model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y].ContainsPony = true;
+            MazeSnapshot temp = LatestSnapshot;
+            LatestSnapshot = null;
+            await Task.Delay(5);
+            LatestSnapshot = temp;
         }
-
-        private Command makeAutoMoveCommand;
-        public System.Windows.Input.ICommand MakeAutoMoveCommand => makeAutoMoveCommand ?? (makeAutoMoveCommand = new Command(makeAutoMove_Execute, makeAutoMove_CanExecute));
 
         class StepTracker
         {
