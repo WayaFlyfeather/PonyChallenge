@@ -87,16 +87,13 @@ namespace PonyChallenge.Services
             };
 
             String json = JsonConvert.SerializeObject(mazeDef);
-            Debug.WriteLine("Request json: " + json);
             StringContent postContent = new StringContent(json, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.PostAsync("/pony-challenge/maze", postContent);
 
             if (response.IsSuccessStatusCode)
             {
                 String jsonret = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine("Response json: " + jsonret);
                 TMazeIDResponse mazeIdResponse = JsonConvert.DeserializeObject<TMazeIDResponse>(jsonret);
-                Debug.WriteLine("ID: " + mazeIdResponse.MazeID);
 
                 return new Maze()
                 {
@@ -140,7 +137,8 @@ namespace PonyChallenge.Services
             };
             switch (snapshot.gamestate.state)
             {
-                case "active": result.State = MazeState.Active; break;
+                case "active":
+                case "Active": result.State = MazeState.Active; break;
                 case "won": result.State = MazeState.Won; break;
                 case "over": result.State = MazeState.Lost; break;
                 default: Debug.WriteLine("Unknown state: " + snapshot.gamestate.state); break;
@@ -199,7 +197,5 @@ namespace PonyChallenge.Services
             }
             throw new ApplicationException("Response unsuccessful: " + response.StatusCode.ToString());
         }
-
-
     }
 }

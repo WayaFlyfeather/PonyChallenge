@@ -14,13 +14,9 @@ namespace PonyChallenge.Views
 	public partial class NewMazePage : ContentPage
 	{
         PonyMazeViewModel vm => BindingContext as PonyMazeViewModel;
-        PonyMazeViewModel prevVM = null;
         public NewMazePage ()
 		{
 			InitializeComponent ();
-            prevVM = vm;
-            if (vm != null)
-                vm.PropertyChanged += VM_PropertyChanged;
 		}
 
         private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -32,14 +28,19 @@ namespace PonyChallenge.Views
             }
         }
 
-        protected override void OnBindingContextChanged()
+        protected override void OnAppearing()
         {
-            base.OnBindingContextChanged();
-            if (prevVM != null)
-                prevVM.PropertyChanged -= VM_PropertyChanged;
-            if (vm!= null)
+            base.OnAppearing();
+            if (vm != null)
                 vm.PropertyChanged += VM_PropertyChanged;
-            prevVM = vm;
+        }
+
+        protected override void OnDisappearing()
+        {
+            if (vm != null)
+                vm.PropertyChanged -= VM_PropertyChanged;
+
+            base.OnDisappearing();
         }
     }
 }

@@ -10,6 +10,7 @@ using Xamarin.Forms.Xaml;
 
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
+using System.Diagnostics;
 
 namespace PonyChallenge.Views
 {
@@ -20,7 +21,7 @@ namespace PonyChallenge.Views
 
         public NavigateMazePage ()
 		{
-			InitializeComponent ();
+            InitializeComponent();
 		}
 
         protected override void OnAppearing()
@@ -41,7 +42,7 @@ namespace PonyChallenge.Views
         {
             if (String.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(PonyMazeViewModel.LatestSnapshot))
             {
-                MazeCanvas.InvalidateSurface();
+                CreatureCanvas.InvalidateSurface();
                 if (vm.LatestSnapshot.State == Models.MazeState.Won)
                     OnGameWon();
                 if (vm.LatestSnapshot.State == Models.MazeState.Lost)
@@ -92,20 +93,10 @@ namespace PonyChallenge.Views
                 StrokeWidth = WallWidth,
                 StrokeCap = SKStrokeCap.Square
             })
-            using (SKPaint ponyFill = new SKPaint
-            {
-                Style = SKPaintStyle.Fill,
-                Color = Color.Red.ToSKColor(),
-            })
             using (SKPaint exitFill = new SKPaint
             {
                 Style = SKPaintStyle.Fill,
                 Color = Color.Green.ToSKColor(),
-            })
-            using (SKPaint domokunFill = new SKPaint
-            {
-                Style = SKPaintStyle.Fill,
-                Color = Color.Brown.ToSKColor(),
             })
             {
                 canvas.DrawRect(offsetX - WallWidth, offsetY - WallWidth, vm.Width * locationUnit + WallWidth * 2, vm.Height * locationUnit + WallWidth * 2, wallStroke);
@@ -122,18 +113,47 @@ namespace PonyChallenge.Views
                             canvas.DrawLine(new SKPoint() { X = offsetX + (x * locationUnit), Y = offsetY + ((y + 1) * locationUnit) }, new SKPoint() { X = offsetX + ((x + 1) * locationUnit), Y = offsetY + ((y + 1) * locationUnit) }, wallStroke);
                         if (vm.LatestSnapshot.Locations[x, y].WestWall)
                             canvas.DrawLine(new SKPoint() { X = offsetX + (x * locationUnit), Y = offsetY + (y * locationUnit) }, new SKPoint() { X = offsetX + (x * locationUnit), Y = offsetY + ((y + 1) * locationUnit) }, wallStroke);
-
-                        if (vm.LatestSnapshot.Locations[x, y].IsExit)
-                            canvas.DrawRect(offsetX + (x * locationUnit) + quarterLocationUnit, offsetY + (y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, exitFill);
-
-                        if (vm.LatestSnapshot.Locations[x, y].ContainsPony)
-                            canvas.DrawRect(offsetX + (x * locationUnit) + quarterLocationUnit, offsetY + (y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, ponyFill);
-
-                        if (vm.LatestSnapshot.Locations[x, y].ContainsDomokun)
-                            canvas.DrawRect(offsetX + (x * locationUnit) + quarterLocationUnit, offsetY + (y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, domokunFill);
                     }
                 }
+
+                canvas.DrawRect(offsetX + (vm.LatestSnapshot.Exit.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.Exit.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, exitFill);
             }
         }
-	}
+
+        void OnCreatureCanvasPaintSurface(object sender, SKPaintSurfaceEventArgs args)
+        {
+            SKImageInfo info = args.Info;
+            SKSurface surface = args.Surface;
+            SKCanvas canvas = surface.Canvas;
+
+            float WallWidth = 2f;
+
+            canvas.Clear();
+
+            if (vm?.LatestSnapshot == null)
+                return;
+
+            float locationUnit = Math.Min((info.Width - WallWidth * 2) / (float)vm.Width, (info.Height - WallWidth * 2) / (float)vm.Height);
+            float halfLocationUnit = locationUnit / 2f;
+            float quarterLocationUnit = locationUnit / 4f;
+
+            float offsetX = (info.Width - (locationUnit * vm.Width)) / 2f;
+            float offsetY = (info.Height - (locationUnit * vm.Height)) / 2f;
+
+            using (SKPaint ponyFill = new SKPaint
+            {
+                Style = SKPaintStyle.Fill,
+                Color = Color.Red.ToSKColor(),
+            })
+            using (SKPaint domokunFill = new SKPaint
+            {
+                Style = SKPaintStyle.Fill,
+                Color = Color.Brown.ToSKColor(),
+            })
+            {
+                canvas.DrawRect(offsetX + (vm.LatestSnapshot.PonyPlacement.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.PonyPlacement.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, ponyFill);
+                canvas.DrawRect(offsetX + (vm.LatestSnapshot.DomokunPlacement.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.DomokunPlacement.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, domokunFill);
+            }
+        }
+    }
 }

@@ -41,7 +41,7 @@ namespace PonyChallenge.ViewModels
             }
         }
 
-        public List<int> Difficulties { get; } = new List<int> { 0, 1, 2, 3 };
+        public List<int> Difficulties { get; } = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         public int SelectedDifficulty
         {
             get => model.Difficulty;
@@ -132,7 +132,6 @@ namespace PonyChallenge.ViewModels
             }
         }
 
-
         bool createMaze_CanExecute()
         {
             return IsValid && model.Id == null;
@@ -144,7 +143,6 @@ namespace PonyChallenge.ViewModels
             {
 
                 Model = await ((App)App.Current).PonyMazeService.CreateMaze(model.Width, model.Height, model.PlayerName, model.Difficulty);
-//                Model = new Maze() { Width = Model.Width, Height = Model.Height, PlayerName = Model.PlayerName, Difficulty = Model.Difficulty, Id = "df5392d2-3d35-4287-9ffd-5d20e59f3f11" };
                 Debug.WriteLine("Maze created, id: " + Model.Id);
                 createMazeCommand.ChangeCanExecute();
                 LatestSnapshot = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
@@ -215,10 +213,7 @@ namespace PonyChallenge.ViewModels
         bool tick()
         {
             if (timerStop)
-            {
-                Debug.WriteLine("Timerstop!");
                 return false;
-            }
 
             try
             {
