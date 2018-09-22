@@ -11,6 +11,8 @@ using Xamarin.Forms.Xaml;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Diagnostics;
+using System.Reflection;
+using System.IO;
 
 namespace PonyChallenge.Views
 {
@@ -18,6 +20,9 @@ namespace PonyChallenge.Views
 	public partial class NavigateMazePage : ContentPage
 	{
         PonyMazeViewModel vm => BindingContext as PonyMazeViewModel;
+
+        SKBitmap domokunBMP = null;
+        SKBitmap ponyBMP = null;
 
         public NavigateMazePage ()
 		{
@@ -28,13 +33,45 @@ namespace PonyChallenge.Views
         {
             base.OnAppearing();
             vm.PropertyChanged += VM_PropertyChanged;
+            domokunBMP = loadBitmap("domokun.png");
+            switch (vm.SelectedPonyName)
+            {
+                case "Applejack":
+                    ponyBMP = loadBitmap("rarity.png"); break;
+                case "Spike":
+                    ponyBMP = loadBitmap("rarity.png"); break;
+                case "Rarity":
+                default:
+                    ponyBMP = loadBitmap("rarity.png"); break;
+            }
             vm.StartTick();
+        }
+
+        SKBitmap loadBitmap(string filename)
+        {
+            string resourceID = "PonyChallenge.Assets." + filename;
+            Assembly assembly = this.GetType().GetTypeInfo().Assembly;
+
+            SKBitmap bmp = null;
+            using (Stream stream = assembly.GetManifestResourceStream(resourceID))
+            {
+                bmp = SKBitmap.Decode(stream);
+            }
+
+            return bmp;
         }
 
         protected override void OnDisappearing()
         {
             vm.PropertyChanged -= VM_PropertyChanged;
             vm.StopTick();
+
+            domokunBMP.Dispose();
+            domokunBMP = null;
+
+            ponyBMP.Dispose();
+            ponyBMP = null;
+
             base.OnDisappearing();
         }
 
@@ -136,24 +173,16 @@ namespace PonyChallenge.Views
             float locationUnit = Math.Min((info.Width - WallWidth * 2) / (float)vm.Width, (info.Height - WallWidth * 2) / (float)vm.Height);
             float halfLocationUnit = locationUnit / 2f;
             float quarterLocationUnit = locationUnit / 4f;
+            float eighthLocationUnit = locationUnit / 8f;
 
             float offsetX = (info.Width - (locationUnit * vm.Width)) / 2f;
             float offsetY = (info.Height - (locationUnit * vm.Height)) / 2f;
 
-            using (SKPaint ponyFill = new SKPaint
-            {
-                Style = SKPaintStyle.Fill,
-                Color = Color.Red.ToSKColor(),
-            })
-            using (SKPaint domokunFill = new SKPaint
-            {
-                Style = SKPaintStyle.Fill,
-                Color = Color.Brown.ToSKColor(),
-            })
-            {
-                canvas.DrawRect(offsetX + (vm.LatestSnapshot.PonyPlacement.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.PonyPlacement.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, ponyFill);
-                canvas.DrawRect(offsetX + (vm.LatestSnapshot.DomokunPlacement.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.DomokunPlacement.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, domokunFill);
-            }
+            //                canvas.DrawRect(offsetX + (vm.LatestSnapshot.PonyPlacement.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.PonyPlacement.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, ponyFill);
+
+            //                canvas.DrawRect(offsetX + (vm.LatestSnapshot.DomokunPlacement.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.DomokunPlacement.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, domokunFill);
+            canvas.DrawBitmap(ponyBMP, new SKRect { Left = offsetX + (vm.LatestSnapshot.PonyPlacement.X * locationUnit) + eighthLocationUnit, Top = offsetY + (vm.LatestSnapshot.PonyPlacement.Y * locationUnit) + eighthLocationUnit, Right = offsetX + ((vm.LatestSnapshot.PonyPlacement.X + 1) * locationUnit) - eighthLocationUnit, Bottom = offsetY + ((vm.LatestSnapshot.PonyPlacement.Y + 1) * locationUnit) - eighthLocationUnit }, null);
+            canvas.DrawBitmap(domokunBMP, new SKRect { Left = offsetX + (vm.LatestSnapshot.DomokunPlacement.X * locationUnit) + eighthLocationUnit, Top = offsetY + (vm.LatestSnapshot.DomokunPlacement.Y * locationUnit) + eighthLocationUnit, Right = offsetX + ((vm.LatestSnapshot.DomokunPlacement.X + 1) * locationUnit) - eighthLocationUnit, Bottom = offsetY + ((vm.LatestSnapshot.DomokunPlacement.Y + 1) * locationUnit) - eighthLocationUnit }, null);
         }
     }
 }

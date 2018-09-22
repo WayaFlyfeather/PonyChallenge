@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:conv="clr-namespace:PonyChallenge.Converters"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
+             BackgroundColor="LightPink"
              x:Class="PonyChallenge.Views.NavigateMazePage">
     <ContentPage.Resources>
         <ResourceDictionary>
