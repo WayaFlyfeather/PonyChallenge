@@ -40,7 +40,29 @@ namespace PonyChallenge.Views
         private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (String.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(PonyMazeViewModel.LatestSnapshot))
+            {
                 MazeCanvas.InvalidateSurface();
+                if (vm.LatestSnapshot.State == Models.MazeState.Won)
+                    OnGameWon();
+                if (vm.LatestSnapshot.State == Models.MazeState.Lost)
+                    OnGameLost();
+            }
+        }
+
+        async void OnGameWon()
+        {
+            string wonMessage = String.Format("You helped {0} escape the maze from the clutches of Domo-Kun. You were so brave!", vm.SelectedPonyName);
+            await DisplayAlert("Congratulations", wonMessage, "Play again");
+
+            App.Current.MainPage = new NewMazePage() { BindingContext = new PonyMazeViewModel() };
+        }
+
+        async void OnGameLost()
+        {
+            string lostMessage = String.Format("Oh no, how unfortunate. {0} was captured by Domo-Kun and will now be tickled! Can you do better next time?", vm.SelectedPonyName);
+            await DisplayAlert("You lost", lostMessage, "Play again");
+
+            App.Current.MainPage = new NewMazePage() { BindingContext = new PonyMazeViewModel() };
         }
 
         void OnMazeCanvasPaintSurface(object sender, SKPaintSurfaceEventArgs args)
@@ -101,14 +123,14 @@ namespace PonyChallenge.Views
                         if (vm.LatestSnapshot.Locations[x, y].WestWall)
                             canvas.DrawLine(new SKPoint() { X = offsetX + (x * locationUnit), Y = offsetY + (y * locationUnit) }, new SKPoint() { X = offsetX + (x * locationUnit), Y = offsetY + ((y + 1) * locationUnit) }, wallStroke);
 
+                        if (vm.LatestSnapshot.Locations[x, y].IsExit)
+                            canvas.DrawRect(offsetX + (x * locationUnit) + quarterLocationUnit, offsetY + (y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, exitFill);
+
                         if (vm.LatestSnapshot.Locations[x, y].ContainsPony)
                             canvas.DrawRect(offsetX + (x * locationUnit) + quarterLocationUnit, offsetY + (y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, ponyFill);
 
                         if (vm.LatestSnapshot.Locations[x, y].ContainsDomokun)
                             canvas.DrawRect(offsetX + (x * locationUnit) + quarterLocationUnit, offsetY + (y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, domokunFill);
-
-                        if (vm.LatestSnapshot.Locations[x, y].IsExit)
-                            canvas.DrawRect(offsetX + (x * locationUnit) + quarterLocationUnit, offsetY + (y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, exitFill);
                     }
                 }
             }

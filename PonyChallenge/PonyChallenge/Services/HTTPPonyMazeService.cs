@@ -52,6 +52,7 @@ namespace PonyChallenge.Services
             public int difficulty { get; set; }
             public string[][] data { get; set; }
             public string maze_id { get; set; }
+            [JsonProperty("game-state")]
             public TGameState gamestate { get; set; }
         }
 
@@ -70,6 +71,7 @@ namespace PonyChallenge.Services
         private class TGameState
         {
             public string state { get; set; }
+            [JsonProperty("state-result")]
             public string stateresult { get; set; }
         }
 
@@ -111,8 +113,6 @@ namespace PonyChallenge.Services
         async Task<MazeSnapshot> IPonyMazeService.GetSnapshot(string mazeId)
         {
             string snapshotString = await client.GetStringAsync("/pony-challenge/maze/" + mazeId);
-            Debug.WriteLine("SnapLength: " + snapshotString.Length);
-            Debug.WriteLine("Snap: " + snapshotString);
             TMazeSnapshot snapshot = JsonConvert.DeserializeObject<TMazeSnapshot>(snapshotString);
             if (snapshot is null)
                 throw new ApplicationException("Could not deserialize snapshot: " + snapshotString);
@@ -138,6 +138,13 @@ namespace PonyChallenge.Services
                     Y = (byte)(snapshot.endpoint[0] / width),
                 }
             };
+            switch (snapshot.gamestate.state)
+            {
+                case "active": result.State = MazeState.Active; break;
+                case "won": result.State = MazeState.Won; break;
+                case "over": result.State = MazeState.Lost; break;
+                default: Debug.WriteLine("Unknown state: " + snapshot.gamestate.state); break;
+            }
 
             for (int idx = 0; idx < width * height; idx++)
             {
@@ -182,15 +189,12 @@ namespace PonyChallenge.Services
                 direction=direction
             };
 
-            string moveJson = JsonConvert.SerializeObject(move);
-            Debug.WriteLine("Move Json: " + moveJson);
-            StringContent postContent = new StringContent(moveJson, Encoding.UTF8, "application/json");
+            StringContent postContent = new StringContent(JsonConvert.SerializeObject(move), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.PostAsync("/pony-challenge/maze/" + mazeId, postContent);
 
             if (response.IsSuccessStatusCode)
             {
                 TMoveState moveResponse = JsonConvert.DeserializeObject<TMoveState>(await response.Content.ReadAsStringAsync());
-                Debug.WriteLine("Move response: " + moveResponse.state + "/" + moveResponse.stateresult);
                 return;
             }
             throw new ApplicationException("Response unsuccessful: " + response.StatusCode.ToString());

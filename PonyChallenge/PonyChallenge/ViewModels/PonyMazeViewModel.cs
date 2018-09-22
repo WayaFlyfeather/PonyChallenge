@@ -99,7 +99,7 @@ namespace PonyChallenge.ViewModels
                     OnPropertyChanged();
                     BestNextMove = null;
                     moveDirectionCommand.ChangeCanExecute();
-                    if (model.Positions!=null)
+                    if (model.Positions!=null && model.Positions.State == MazeState.Active)
                     {
                         Task.Run(() =>
                         {
@@ -143,9 +143,9 @@ namespace PonyChallenge.ViewModels
             try
             {
 
-                //                Model = await ((App)App.Current).PonyMazeService.CreateMaze(model.Width, model.Height, model.PlayerName, model.Difficulty);
-                Model = new Maze() { Width = Model.Width, Height = Model.Height, PlayerName = Model.PlayerName, Difficulty = Model.Difficulty, Id = "df5392d2-3d35-4287-9ffd-5d20e59f3f11" };
-                //                Debug.WriteLine("Maze created, id: " + newMaze.Id);
+                Model = await ((App)App.Current).PonyMazeService.CreateMaze(model.Width, model.Height, model.PlayerName, model.Difficulty);
+//                Model = new Maze() { Width = Model.Width, Height = Model.Height, PlayerName = Model.PlayerName, Difficulty = Model.Difficulty, Id = "df5392d2-3d35-4287-9ffd-5d20e59f3f11" };
+                Debug.WriteLine("Maze created, id: " + Model.Id);
                 createMazeCommand.ChangeCanExecute();
                 LatestSnapshot = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
             }
@@ -257,12 +257,16 @@ namespace PonyChallenge.ViewModels
         {
             await ((App)App.Current).PonyMazeService.Move(Model.Id, directionNames[direction]);
             LatestSnapshot = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
-
+            if (LatestSnapshot.State != MazeState.Active)
+                MakeRepeatingAutoMoves = false;
             lastMove = DateTimeOffset.Now;
         }
 
         bool canPonyMoveInDirection(int direction)
         {
+            if (LatestSnapshot.State != MazeState.Active)
+                return false;
+
             MazeLocation ponyLocation = LatestSnapshot?.Locations[LatestSnapshot.PonyPlacement.X, LatestSnapshot.PonyPlacement.Y];
             if (ponyLocation is null)
                 return false;
