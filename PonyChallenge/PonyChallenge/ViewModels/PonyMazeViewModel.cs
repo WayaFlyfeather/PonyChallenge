@@ -24,7 +24,7 @@ namespace PonyChallenge.ViewModels
             model = new Maze();
         }
 
-        public List<string> PonyNames { get; } = new List<string> { "Rarity", "Applejack", "Spike" };
+        public List<string> PonyNames { get; } = new List<string> { "Rarity", "Applejack", "Pinkie Pie", "Spike" };
 
         public string SelectedPonyName
         {
