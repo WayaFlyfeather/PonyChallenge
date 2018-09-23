@@ -13,7 +13,6 @@
     <None Remove="Assets\applejack.png" />
     <None Remove="Assets\domokun.png" />
     <None Remove="Assets\pinkie_pie.png" />
-    <None Remove="Assets\rainbow.png" />
     <None Remove="Assets\rarity.png" />
     <None Remove="Assets\spike.png" />
   </ItemGroup>
@@ -22,7 +21,6 @@
     <EmbeddedResource Include="Assets\applejack.png" />
     <EmbeddedResource Include="Assets\domokun.png" />
     <EmbeddedResource Include="Assets\pinkie_pie.png" />
-    <EmbeddedResource Include="Assets\rainbow.png" />
     <EmbeddedResource Include="Assets\rarity.png" />
     <EmbeddedResource Include="Assets\spike.png" />
   </ItemGroup>

@@ -23,7 +23,6 @@ namespace PonyChallenge.Views
 
         SKBitmap domokunBMP = null;
         SKBitmap ponyBMP = null;
-        SKBitmap exitBMP = null;
 
         public NavigateMazePage ()
 		{
@@ -34,7 +33,6 @@ namespace PonyChallenge.Views
         {
             base.OnAppearing();
             vm.PropertyChanged += VM_PropertyChanged;
-            exitBMP = loadBitmap("rainbow.png");
             domokunBMP = loadBitmap("domokun.png");
             switch (vm.SelectedPonyName)
             {
@@ -69,9 +67,6 @@ namespace PonyChallenge.Views
         {
             vm.PropertyChanged -= VM_PropertyChanged;
             vm.StopTick();
-
-            exitBMP.Dispose();
-            exitBMP = null;
 
             domokunBMP.Dispose();
             domokunBMP = null;
@@ -131,12 +126,28 @@ namespace PonyChallenge.Views
             float offsetX = (info.Width - (locationUnit * vm.Width)) / 2f;
             float offsetY = (info.Height - (locationUnit * vm.Height)) / 2f;
 
+            SKColor ponyColor;
+            switch (vm.SelectedPonyName)
+            {
+                case "Pinkie Pie": ponyColor = Color.DeepPink.ToSKColor(); break;
+                case "Applejack": ponyColor = Color.SandyBrown.ToSKColor(); break;
+                case "Spike": ponyColor = Color.LawnGreen.ToSKColor(); break; 
+                case "Rarity":
+                default:
+                    ponyColor = Color.BlueViolet.ToSKColor(); break;
+            }
+
             using (SKPaint wallStroke = new SKPaint
             {
                 Style = SKPaintStyle.Stroke,
                 Color = Color.Black.ToSKColor(),
                 StrokeWidth = WallWidth,
                 StrokeCap = SKStrokeCap.Square
+            })
+            using (SKPaint exitFill = new SKPaint
+            {
+                Style=SKPaintStyle.Fill,
+                Color=ponyColor
             })
             {
                 canvas.DrawRect(offsetX - WallWidth, offsetY - WallWidth, vm.Width * locationUnit + WallWidth * 2, vm.Height * locationUnit + WallWidth * 2, wallStroke);
@@ -156,8 +167,8 @@ namespace PonyChallenge.Views
                     }
                 }
 
-                canvas.DrawBitmap(exitBMP, new SKRect { Left = offsetX + (vm.LatestSnapshot.Exit.X * locationUnit) + eighthLocationUnit, Top = offsetY + (vm.LatestSnapshot.Exit.Y * locationUnit) + eighthLocationUnit, Right = offsetX + ((vm.LatestSnapshot.Exit.X + 1) * locationUnit) - eighthLocationUnit, Bottom = offsetY + ((vm.LatestSnapshot.Exit.Y + 1) * locationUnit) - eighthLocationUnit }, null);
-            }
+                canvas.DrawRect(offsetX + (vm.LatestSnapshot.Exit.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.Exit.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, exitFill);
+            }           
         }
 
         void OnCreatureCanvasPaintSurface(object sender, SKPaintSurfaceEventArgs args)
