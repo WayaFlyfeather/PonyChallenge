@@ -321,7 +321,7 @@ namespace PonyChallenge.ViewModels
             }
         }
     
-        int? stepsToExit(MazePoint position, int stepCount, StepTracker tracks)
+        int? stepsToExit(MazePoint position, int stepCount, StepTracker tracks, bool safeRouteOnly)
         {
             if (tracks.HasStepped(position))
                 return null;
@@ -330,8 +330,8 @@ namespace PonyChallenge.ViewModels
             if (thisLocation.IsExit)
                 return stepCount;
 
-            //if (thisLocation.ContainsDomokun)
-            //    return null;
+            if (thisLocation.ContainsDomokun && safeRouteOnly)
+                return null;
 
             int? bestResult = null;
 
@@ -340,25 +340,25 @@ namespace PonyChallenge.ViewModels
             newTracks.MarkStep(position);
 
             if (!thisLocation.NorthWall)
-                bestResult = stepsToExit(position.NorthOf, stepCount + 1, newTracks);
+                bestResult = stepsToExit(position.NorthOf, stepCount + 1, newTracks, safeRouteOnly);
 
             if (!thisLocation.EastWall)
             {
-                int? eastResult= stepsToExit(position.EastOf, stepCount + 1, newTracks);
+                int? eastResult= stepsToExit(position.EastOf, stepCount + 1, newTracks, safeRouteOnly);
                 if (!bestResult.HasValue || (eastResult.HasValue && eastResult.Value < bestResult.Value))
                     bestResult = eastResult;
             }
 
             if (!thisLocation.SouthWall)
             {
-                int? southResult = stepsToExit(position.SouthOf, stepCount + 1, newTracks);
+                int? southResult = stepsToExit(position.SouthOf, stepCount + 1, newTracks, safeRouteOnly);
                 if (!bestResult.HasValue || (southResult.HasValue && southResult.Value < bestResult.Value))
                     bestResult = southResult;
             }
 
             if (!thisLocation.WestWall)
             {
-                int? westResult = stepsToExit(position.WestOf, stepCount + 1, newTracks);
+                int? westResult = stepsToExit(position.WestOf, stepCount + 1, newTracks, safeRouteOnly);
                 if (!bestResult.HasValue || (westResult.HasValue && westResult.Value < bestResult.Value))
                     bestResult = westResult;
             }
@@ -366,45 +366,134 @@ namespace PonyChallenge.ViewModels
             return bestResult;
         }
 
-        int findDirection()
+        byte? checkDomokunInNeighboringLocation(MazePoint point)
         {
-            int?[] directionResults = new int?[4];
-
-            MazeLocation thisLocation = model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y];
-            StepTracker tracker = new StepTracker(model.Width, model.Height);
-            tracker.MarkStep(model.Positions.PonyPlacement);
-
-            directionResults[0] = thisLocation.NorthWall ? null : stepsToExit(model.Positions.PonyPlacement.NorthOf, 1, tracker);
-            directionResults[1] = thisLocation.EastWall ? null : stepsToExit(model.Positions.PonyPlacement.EastOf, 1, tracker);
-            directionResults[2] = thisLocation.SouthWall ? null : stepsToExit(model.Positions.PonyPlacement.SouthOf, 1, tracker);
-            directionResults[3] = thisLocation.WestWall ? null : stepsToExit(model.Positions.PonyPlacement.WestOf, 1, tracker);
-
-            int bestIndex = 0;
-
-            for (int idx=1; idx < 4; idx++)
+            MazeLocation location = model.Positions.Locations[point.X, point.Y];
+            for (byte direction = 0; direction < 4; direction++)
             {
-                if (!directionResults[bestIndex].HasValue || (directionResults[idx].HasValue && directionResults[idx]<directionResults[bestIndex]))
+                if (location.Walls[direction]) 
+                    continue;
+
+                MazePoint neighborPoint = point.FromDirection(direction);
+                MazeLocation neighborLocation = Model.Positions.Locations[neighborPoint.X, neighborPoint.Y];
+                if (neighborLocation.ContainsDomokun)
+                    return direction;
+            }
+
+            return null;
+        }
+
+        byte findDirection()
+        {
+            byte?[] ruledOutDirections = new byte?[4];
+            MazeLocation thisLocation = model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y];
+            for (byte direction = 0; direction < 4; direction++)
+                ruledOutDirections[direction] = thisLocation.Walls[direction] ? (byte?)0 : (byte?)null;
+
+            byte? onlyWay = checkForOnlyWay(ruledOutDirections);
+            if (onlyWay.HasValue)
+                return onlyWay.Value;
+
+            byte? domokunOneStepAway = checkDomokunInNeighboringLocation(model.Positions.PonyPlacement);
+            if (domokunOneStepAway.HasValue)
+            {
+                ruledOutDirections[domokunOneStepAway.Value] = 1;
+                onlyWay = checkForOnlyWay(ruledOutDirections);
+                if (onlyWay.HasValue)
+                    return onlyWay.Value;
+            }
+
+            for (byte direction = 0; direction < 4; direction++)
+            {
+                if (ruledOutDirections[direction].HasValue) //skip if already ruled out
+                    continue;
+
+                MazePoint neighborPoint = Model.Positions.PonyPlacement.FromDirection(direction);
+                MazeLocation neighborLocation = Model.Positions.Locations[neighborPoint.X, neighborPoint.Y];
+                if (neighborLocation.IsExit) //the exit is just one step away, go there!
+                    return direction;
+            }
+
+            if (!domokunOneStepAway.HasValue)
+            {
+                for (byte direction = 0; direction < 4; direction++)
                 {
-                    bestIndex = idx;
+                    if (ruledOutDirections[direction].HasValue) //skip if already ruled out
+                        continue;
+
+                    byte? domokunTwoStepsAway = checkDomokunInNeighboringLocation(Model.Positions.PonyPlacement.FromDirection(direction));
+                    if (domokunTwoStepsAway.HasValue)
+                        ruledOutDirections[direction] = 2;
                 }
             }
 
-            if (directionResults[bestIndex].HasValue)
-                return bestIndex;
-            else
+            onlyWay = checkForOnlyWay(ruledOutDirections);
+            if (onlyWay.HasValue)
+                return onlyWay.Value;
+
+            int?[] directionResults = new int?[4];
+            StepTracker tracker = new StepTracker(model.Width, model.Height);
+            tracker.MarkStep(model.Positions.PonyPlacement);
+
+            for (byte direction = 0; direction < 4; direction++)
             {
-                Debug.WriteLine("All directions leads to null, finding first legal");
-                if (!thisLocation.NorthWall)
-                    return 0;
-                if (!thisLocation.EastWall)
-                    return 1;
-                if (!thisLocation.SouthWall)
-                    return 2;
-                if (!thisLocation.WestWall)
-                    return 3;
+                if (ruledOutDirections[direction].HasValue)
+                    directionResults[direction] = null;
+                else
+                {
+                    directionResults[direction] = stepsToExit(model.Positions.PonyPlacement.FromDirection(direction), 1, tracker, false);
+                    if (!directionResults[direction].HasValue)
+                        ruledOutDirections[direction] = 3;
+                }
             }
 
-            throw new ApplicationException("findDirection: Should not make it here.");
+            byte bestDirection = 0;
+
+            for (byte direction=1; direction < 4; direction++)
+            {
+                if (!directionResults[bestDirection].HasValue || (directionResults[direction].HasValue && directionResults[direction]<directionResults[bestDirection]))
+                    bestDirection = direction;
+            }
+
+            if (directionResults[bestDirection].HasValue)
+                return bestDirection;
+
+            onlyWay = checkForOnlyWay(ruledOutDirections);
+            if (onlyWay.HasValue)
+                return onlyWay.Value;
+            else
+                throw new ApplicationException("Can't find a move - shouldn't happen");
         }
+
+        byte? checkForOnlyWay(byte?[] ruledOutDirections)
+        {
+            byte? forcedDirection = null;
+
+            int highRuleoutValue = -1;
+            byte highRuleoutDirection = 0;
+            for (byte direction=0; direction<4; direction++)
+            {
+                if (!ruledOutDirections[direction].HasValue)
+                {
+                    if (forcedDirection.HasValue)
+                        return null; // at least two possible routes; no forced move.
+                    else
+                        forcedDirection = direction;
+                }
+                else
+                {
+                    if (ruledOutDirections[direction].Value > highRuleoutValue)
+                    {
+                        highRuleoutValue = ruledOutDirections[direction].Value;
+                        highRuleoutDirection = direction;
+                    }
+                }
+            }
+
+            if (!forcedDirection.HasValue) //no possible moves found; use the one ruled out last.
+                return highRuleoutDirection;
+
+            return forcedDirection;
+        }            
     }
 }
