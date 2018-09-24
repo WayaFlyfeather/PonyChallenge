@@ -52,8 +52,9 @@
             <!--<Frame Padding="0" OutlineColor="Black" CornerRadius="0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" VerticalOptions="Fill" Margin="3"  BackgroundColor="LightGray">
                 <StackLayout x:Name="TheMaze" Spacing="0" HorizontalOptions="Fill" VerticalOptions="Fill" />
             </Frame>-->
-            <Button Grid.Row="3" Grid.Column="0" HorizontalOptions="Fill" Text="Single Auto Move" Command="{Binding MakeAutoMoveCommand}" IsVisible="{Binding HasSnapshot}" />
-            <StackLayout Orientation="Horizontal" Grid.Row="3" Grid.Column="1" IsVisible="{Binding HasSnapshot}">
+            <StackLayout Orientation="Horizontal" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{Binding HasSnapshot}">
+                <Button HorizontalOptions="Start" Text="Quit Maze" Clicked="QuitButton_Clicked" />
+                <Button HorizontalOptions="FillAndExpand" Text="Single Auto Move" Command="{Binding MakeAutoMoveCommand}" />
                 <Button HorizontalOptions="FillAndExpand" Text="Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
                 <Button HorizontalOptions="FillAndExpand" Text="Stop Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
                 <StackLayout Spacing="0">

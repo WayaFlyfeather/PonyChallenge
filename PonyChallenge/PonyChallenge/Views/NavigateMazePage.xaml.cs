@@ -204,5 +204,15 @@ namespace PonyChallenge.Views
             canvas.DrawBitmap(ponyBMP, new SKRect { Left = offsetX + (vm.LatestSnapshot.PonyPlacement.X * locationUnit) + eighthLocationUnit, Top = offsetY + (vm.LatestSnapshot.PonyPlacement.Y * locationUnit) + eighthLocationUnit, Right = offsetX + ((vm.LatestSnapshot.PonyPlacement.X + 1) * locationUnit) - eighthLocationUnit, Bottom = offsetY + ((vm.LatestSnapshot.PonyPlacement.Y + 1) * locationUnit) - eighthLocationUnit }, null);
             canvas.DrawBitmap(domokunBMP, new SKRect { Left = offsetX + (vm.LatestSnapshot.DomokunPlacement.X * locationUnit) + eighthLocationUnit, Top = offsetY + (vm.LatestSnapshot.DomokunPlacement.Y * locationUnit) + eighthLocationUnit, Right = offsetX + ((vm.LatestSnapshot.DomokunPlacement.X + 1) * locationUnit) - eighthLocationUnit, Bottom = offsetY + ((vm.LatestSnapshot.DomokunPlacement.Y + 1) * locationUnit) - eighthLocationUnit }, null);
         }
+
+        private async void QuitButton_Clicked(object sender, EventArgs e)
+        {
+            vm.MakeRepeatingAutoMoves = false;
+            string lostMessage = String.Format("Are you really, really sure you want to quit this maze? Then {0} will be left all alone in the cold & dark maze, chased by the scary Domo-Kun!", vm.SelectedPonyName);
+
+            if (await DisplayAlert("Quit", lostMessage, "Quit", "Continue"))
+                vm.ResetMaze();
+
+        }
     }
 }
