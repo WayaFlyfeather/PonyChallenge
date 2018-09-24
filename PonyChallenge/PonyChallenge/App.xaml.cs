@@ -16,7 +16,8 @@ namespace PonyChallenge
         {
             InitializeComponent();
 
-            MainPage = new NewMazePage() { BindingContext = new PonyMazeViewModel() };
+//            MainPage = new NewMazePage() { BindingContext = new PonyMazeViewModel() };
+            MainPage = new NavigateMazePage() { BindingContext = new PonyMazeViewModel() };
         }
 
         protected override void OnStart()

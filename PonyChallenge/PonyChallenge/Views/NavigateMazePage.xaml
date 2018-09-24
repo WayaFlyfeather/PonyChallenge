@@ -29,7 +29,7 @@
             <Label Grid.Row="0" Grid.Column="1" Text="{Binding Model.Id}" />
             <Label Grid.Row="1" Grid.Column="0" Text="Specs" />
             <Label Grid.Row="1" Grid.Column="1" Text="{Binding Specs}" />
-            <Grid  ColumnSpacing="0" RowSpacing="0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" VerticalOptions="Fill">
+            <Grid ColumnSpacing="0" RowSpacing="0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" VerticalOptions="Fill" IsEnabled="{Binding HasSnapshot}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="9*" />
@@ -61,6 +61,42 @@
                     <Stepper Minimum="-1" Maximum="3" Value="{Binding MovesPerSecondPower}" />
                 </StackLayout>
             </StackLayout>
+            
+            <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="2" BackgroundColor="#60A0A0A0" IsVisible="{Binding HasSnapshot, Converter={StaticResource BooleanNegationConverter}}">
+                <Frame OutlineColor="{Binding SelectedPonyName, Converter={StaticResource PonyToPageBackgroundColorConverter}}" CornerRadius="0" BackgroundColor="#40FFFFFF" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <StackLayout Grid.Row="0 " Grid.Column="0" HorizontalOptions="Center">
+                            <Label Text="Width" HorizontalOptions="Center" />
+                            <Label Text="{Binding Width, Mode=OneWay}" HorizontalOptions="Center" />
+                            <Stepper Maximum="25" Minimum="15" Increment="1" Value="{Binding Width, Mode=TwoWay}" HorizontalOptions="Center" />
+                        </StackLayout>
+                        <StackLayout Grid.Row="0" Grid.Column="1" HorizontalOptions="Center">
+                            <Label Text="Height" HorizontalOptions="Center" />
+                            <Label Text="{Binding Height, Mode=OneWay}" HorizontalOptions="Center"/>
+                            <Stepper Maximum="25" Minimum="15" Increment="1" Value="{Binding Height, Mode=TwoWay}" HorizontalOptions="Center"/>
+                        </StackLayout>
+                        <StackLayout Grid.Row="1" Grid.Column="0" Padding="4">
+                            <Label Text="Player Name" />
+                            <Picker ItemsSource="{Binding PonyNames}" SelectedItem="{Binding SelectedPonyName, Mode=TwoWay}" />
+                        </StackLayout>
+                        <StackLayout Grid.Row="1" Grid.Column="1" Padding="4">
+                            <Label Text="Difficulty" />
+                            <Picker ItemsSource="{Binding Difficulties}" SelectedItem="{Binding SelectedDifficulty, Mode=TwoWay}" />
+                        </StackLayout>
+                        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding CreateMazeCommand}" Margin="4" Text="Create Maze" HorizontalOptions="Center" />
+                    </Grid>
+                </Frame> 
+            </Frame>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

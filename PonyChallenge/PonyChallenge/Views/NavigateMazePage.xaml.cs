@@ -79,12 +79,18 @@ namespace PonyChallenge.Views
 
         private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            if (String.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(PonyMazeViewModel.HasSnapshot))
+            {
+                MazeCanvas.InvalidateSurface();
+                CreatureCanvas.InvalidateSurface();
+            }
+
             if (String.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(PonyMazeViewModel.LatestSnapshot))
             {
                 CreatureCanvas.InvalidateSurface();
-                if (vm.LatestSnapshot.State == Models.MazeState.Won)
+                if (vm.HasSnapshot && vm.LatestSnapshot.State == Models.MazeState.Won)
                     OnGameWon();
-                if (vm.LatestSnapshot.State == Models.MazeState.Lost)
+                if (vm.HasSnapshot && vm.LatestSnapshot.State == Models.MazeState.Lost)
                     OnGameLost();
             }
         }
@@ -94,7 +100,7 @@ namespace PonyChallenge.Views
             string wonMessage = String.Format("You helped {0} escape the maze from the clutches of Domo-Kun. You were so brave!", vm.SelectedPonyName);
             await DisplayAlert("Congratulations", wonMessage, "Play again");
 
-            App.Current.MainPage = new NewMazePage() { BindingContext = new PonyMazeViewModel() };
+            vm.ResetMaze();
         }
 
         async void OnGameLost()
@@ -102,7 +108,7 @@ namespace PonyChallenge.Views
             string lostMessage = String.Format("Oh no, how unfortunate. {0} was captured by Domo-Kun and will now be tickled! Can you do better next time?", vm.SelectedPonyName);
             await DisplayAlert("You lost", lostMessage, "Play again");
 
-            App.Current.MainPage = new NewMazePage() { BindingContext = new PonyMazeViewModel() };
+            vm.ResetMaze();
         }
 
         void OnMazeCanvasPaintSurface(object sender, SKPaintSurfaceEventArgs args)

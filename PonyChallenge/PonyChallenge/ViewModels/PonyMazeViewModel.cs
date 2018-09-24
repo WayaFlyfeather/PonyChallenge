@@ -107,8 +107,15 @@ namespace PonyChallenge.ViewModels
             {
                 if (model.Positions != value)
                 {
+                    bool nullMaze = (model.Positions is null) || (value is null);
                     model.Positions = value;                    
                     OnPropertyChanged();
+                    if (nullMaze)
+                    {
+                        OnPropertyChanged(nameof(HasSnapshot));
+                        OnPropertyChanged(nameof(IsValid));
+                        createMazeCommand?.ChangeCanExecute();
+                    }
                     BestNextMove = null;
                     moveDirectionCommand.ChangeCanExecute();
                     if (model.Positions!=null && model.Positions.State == MazeState.Active)
@@ -124,6 +131,8 @@ namespace PonyChallenge.ViewModels
                 }
             }
         }
+
+        public bool HasSnapshot => !(LatestSnapshot is null);
 
         public string Specs => String.Format($"{Width},{Height} {SelectedPonyName} ({SelectedDifficulty})");
 
@@ -146,7 +155,13 @@ namespace PonyChallenge.ViewModels
 
         bool createMaze_CanExecute()
         {
-            return IsValid && model.Id == null;
+            return IsValid && String.IsNullOrEmpty(model.Id);
+        }
+
+        public void ResetMaze()
+        {
+            Model.Id = null;
+            LatestSnapshot = null;
         }
 
         async void createMaze_Execute()
@@ -264,6 +279,9 @@ namespace PonyChallenge.ViewModels
 
         bool canPonyMoveInDirection(int direction)
         {
+            if (LatestSnapshot is null)
+                return false;
+
             if (LatestSnapshot.State != MazeState.Active)
                 return false;
 
