@@ -315,14 +315,17 @@ namespace PonyChallenge.ViewModels
                 return rows[position.Y][position.X];
             }
 
-            public StepTracker Clone()
+            public StepTracker CloneWithStep(MazePoint stepPosition)
             {
-                return new StepTracker(this);
+                StepTracker clone = new StepTracker(this);
+                clone.MarkStep(stepPosition);
+
+                return clone;
             }
 
-            public void MarkStep(MazePoint position)
+            public void MarkStep(MazePoint stepPosition)
             {
-                rows[position.Y][position.X] = true;
+                this.rows[stepPosition.Y][stepPosition.X] = true;
             }
         }
     
@@ -339,10 +342,7 @@ namespace PonyChallenge.ViewModels
                 return null;
 
             int? bestResult = null;
-
-            StepTracker newTracks = tracks.Clone();
-
-            newTracks.MarkStep(position);
+            StepTracker newTracks = tracks.CloneWithStep(position);
 
             if (!thisLocation.NorthWall)
                 bestResult = stepsToExit(position.NorthOf, stepCount + 1, newTracks, safeRouteOnly);
@@ -381,9 +381,7 @@ namespace PonyChallenge.ViewModels
                 return null;
 
             int? bestResult = null;
-
-            StepTracker newTracks = tracks.Clone();
-            newTracks.MarkStep(position);
+            StepTracker newTracks = tracks.CloneWithStep(position);
 
             bool culDeSac = true;
             for (byte direction=0; direction < 4; direction++)
@@ -416,9 +414,7 @@ namespace PonyChallenge.ViewModels
                 return null;
 
             int? bestResult = null;
-
-            StepTracker newTracks = tracks.Clone();
-            newTracks.MarkStep(position);
+            StepTracker newTracks = tracks.CloneWithStep(position);
 
             if (entryDirection != 2  && !thisLocation.NorthWall)
                 bestResult = stepsToLoop(0, position.NorthOf, stepCount + 1, newTracks);
