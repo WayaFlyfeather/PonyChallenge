@@ -274,24 +274,6 @@ namespace PonyChallenge.ViewModels
             return !ponyLocation.Walls[direction];
         }
 
-        //async Task makeMockMove(int direction)
-        //{
-        //    model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y].ContainsPony = false;
-        //    switch (direction)
-        //    {
-        //        case 0: model.Positions.PonyPlacement = model.Positions.PonyPlacement.NorthOf; break;
-        //        case 1: model.Positions.PonyPlacement = model.Positions.PonyPlacement.EastOf; break;
-        //        case 2: model.Positions.PonyPlacement = model.Positions.PonyPlacement.SouthOf; break;
-        //        case 3: model.Positions.PonyPlacement = model.Positions.PonyPlacement.WestOf; break;
-        //        default: break;
-        //    }
-        //    model.Positions.Locations[model.Positions.PonyPlacement.X, model.Positions.PonyPlacement.Y].ContainsPony = true;
-        //    MazeSnapshot temp = LatestSnapshot;
-        //    LatestSnapshot = null;
-        //    await Task.Delay(5);
-        //    LatestSnapshot = temp;
-        //}
-
         class StepTracker
         {
             BitArray[] rows;
@@ -364,6 +346,82 @@ namespace PonyChallenge.ViewModels
             if (!thisLocation.WestWall)
             {
                 int? westResult = stepsToExit(position.WestOf, stepCount + 1, newTracks, safeRouteOnly);
+                if (!bestResult.HasValue || (westResult.HasValue && westResult.Value < bestResult.Value))
+                    bestResult = westResult;
+            }
+
+            return bestResult;
+        }
+
+        int? countLongestPath(byte entryDirection, MazePoint position, int stepCount, StepTracker tracks)
+        {
+            if (tracks.HasStepped(position))
+                return null;
+
+            MazeLocation thisLocation = model.Positions.Locations[position.X, position.Y];
+            if (thisLocation.ContainsDomokun)
+                return null;
+
+            int? bestResult = null;
+
+            StepTracker newTracks = tracks.Clone();
+            newTracks.MarkStep(position);
+
+            bool culDeSac = true;
+            for (byte direction=0; direction < 4; direction++)
+            {
+                if ((entryDirection == 0 && direction == 2) || (entryDirection == 2 && direction == 0) || (entryDirection == 3 && direction == 1) || (entryDirection == 1 && direction == 3))
+                    continue;
+
+                if (!thisLocation.Walls[direction])
+                {
+                    culDeSac = false;
+                    int? result = countLongestPath(direction, position.FromDirection(direction), stepCount + 1, newTracks);
+                    if (!bestResult.HasValue || result.HasValue && result.Value > bestResult.Value)
+                        bestResult = result;
+                }
+            }
+            if (culDeSac)
+                return stepCount;
+
+            return bestResult;
+        }
+
+        int? stepsToLoop(byte entryDirection, MazePoint position, int stepCount, StepTracker tracks)
+        {
+            if (tracks.HasStepped(position))
+                return stepCount;
+
+            MazeLocation thisLocation = model.Positions.Locations[position.X, position.Y];
+
+            if (thisLocation.ContainsDomokun)
+                return null;
+
+            int? bestResult = null;
+
+            StepTracker newTracks = tracks.Clone();
+            newTracks.MarkStep(position);
+
+            if (entryDirection != 2  && !thisLocation.NorthWall)
+                bestResult = stepsToLoop(0, position.NorthOf, stepCount + 1, newTracks);
+
+            if (entryDirection != 3 && !thisLocation.EastWall)
+            {
+                int? eastResult = stepsToLoop(1, position.EastOf, stepCount + 1, newTracks);
+                if (!bestResult.HasValue || (eastResult.HasValue && eastResult.Value < bestResult.Value))
+                    bestResult = eastResult;
+            }
+
+            if (entryDirection != 0 && !thisLocation.SouthWall)
+            {
+                int? southResult = stepsToLoop(2, position.SouthOf, stepCount + 1, newTracks);
+                if (!bestResult.HasValue || (southResult.HasValue && southResult.Value < bestResult.Value))
+                    bestResult = southResult;
+            }
+
+            if (entryDirection != 1 && !thisLocation.WestWall)
+            {
+                int? westResult = stepsToLoop(3, position.WestOf, stepCount + 1, newTracks);
                 if (!bestResult.HasValue || (westResult.HasValue && westResult.Value < bestResult.Value))
                     bestResult = westResult;
             }
@@ -447,27 +505,74 @@ namespace PonyChallenge.ViewModels
                 else
                 {
                     directionResults[direction] = stepsToExit(model.Positions.PonyPlacement.FromDirection(direction), 1, tracker, false);
+                }
+            }
+            byte? bestDirection = getShortestRoute(directionResults);
+            if (bestDirection.HasValue)
+                return bestDirection.Value;
+
+            for (byte direction = 0; direction < 4; direction++)
+            {
+                if (ruledOutDirections[direction].HasValue)
+                    directionResults[direction] = null;
+                else
+                    directionResults[direction] = stepsToLoop(direction, model.Positions.PonyPlacement.FromDirection(direction), 1, tracker);
+            }
+            bestDirection = getShortestRoute(directionResults);
+            if (bestDirection.HasValue)
+                return bestDirection.Value;
+
+            for (byte direction = 0; direction < 4; direction++)
+            {
+                if (ruledOutDirections[direction].HasValue)
+                    directionResults[direction] = null;
+                else
+                {
+                    directionResults[direction] = countLongestPath(direction, model.Positions.PonyPlacement.FromDirection(direction), 1, tracker);
                     if (!directionResults[direction].HasValue)
                         ruledOutDirections[direction] = 3;
                 }
             }
 
-            byte bestDirection = 0;
-
-            for (byte direction=1; direction < 4; direction++)
-            {
-                if (!directionResults[bestDirection].HasValue || (directionResults[direction].HasValue && directionResults[direction]<directionResults[bestDirection]))
-                    bestDirection = direction;
-            }
-
-            if (directionResults[bestDirection].HasValue)
-                return bestDirection;
+            bestDirection = getLongestRoute(directionResults);
+            if (bestDirection.HasValue)
+                return bestDirection.Value;
 
             onlyWay = checkForOnlyWay(ruledOutDirections);
             if (onlyWay.HasValue)
                 return onlyWay.Value;
             else
                 throw new ApplicationException("Can't find a move - shouldn't happen");
+        }
+
+        byte? getShortestRoute(int?[] routeResults)
+        {
+            byte bestRoute = 0;
+            for (byte direction = 1; direction < 4; direction++)
+            {
+                if (!routeResults[bestRoute].HasValue || (routeResults[direction].HasValue && routeResults[direction] < routeResults[bestRoute]))
+                    bestRoute = direction;
+            }
+
+            if (routeResults[bestRoute].HasValue)
+                return bestRoute;
+            else
+                return null;
+        }
+
+        byte? getLongestRoute(int?[] routeResults)
+        {
+            byte bestRoute = 0;
+            for (byte direction = 1; direction < 4; direction++)
+            {
+                if (!routeResults[bestRoute].HasValue || (routeResults[direction].HasValue && routeResults[direction] > routeResults[bestRoute]))
+                    bestRoute = direction;
+            }
+
+            if (routeResults[bestRoute].HasValue)
+                return bestRoute;
+            else
+                return null;
         }
 
         byte? checkForOnlyWay(byte?[] ruledOutDirections)
