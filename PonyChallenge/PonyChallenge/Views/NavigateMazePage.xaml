@@ -8,6 +8,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <conv:BooleanNegationConverter x:Key="BooleanNegationConverter" />
+            <conv:MovesPerSecondPowerToSpeedConverter x:Key="MovesPerSecondPowerToSpeedConverter" />
             <conv:PonyToPageBackgroundColorConverter x:Key="PonyToPageBackgroundColorConverter" />
             <conv:PonyToMazeBackgroundColorConverter x:Key="PonyToMazeBackgroundColorConverter" />
         </ResourceDictionary>
@@ -52,8 +53,14 @@
                 <StackLayout x:Name="TheMaze" Spacing="0" HorizontalOptions="Fill" VerticalOptions="Fill" />
             </Frame>-->
             <Button Grid.Row="3" Grid.Column="0" HorizontalOptions="Fill" Text="Single Auto Move" Command="{Binding MakeAutoMoveCommand}" />
-            <Button Grid.Row="3" Grid.Column="1" HorizontalOptions="Fill" Text="Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
-            <Button Grid.Row="3" Grid.Column="1" HorizontalOptions="Fill" Text="Stop Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
+            <StackLayout Orientation="Horizontal" Grid.Row="3" Grid.Column="1" >
+                <Button HorizontalOptions="FillAndExpand" Text="Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
+                <Button HorizontalOptions="FillAndExpand" Text="Stop Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
+                <StackLayout Spacing="0">
+                    <Label Text="{Binding MovesPerSecondPower, Converter={StaticResource MovesPerSecondPowerToSpeedConverter}}" FontSize="9"  HorizontalOptions="Center" />
+                    <Stepper Minimum="-1" Maximum="3" Value="{Binding MovesPerSecondPower}" />
+                </StackLayout>
+            </StackLayout>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

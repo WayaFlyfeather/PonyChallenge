@@ -88,6 +88,18 @@ namespace PonyChallenge.ViewModels
             }
         }
 
+
+        private int movesPerSecondPower = 1;
+        public int MovesPerSecondPower
+        {
+            get => movesPerSecondPower;
+            set
+            {
+                if (SetProperty(ref movesPerSecondPower, value))
+                    minDelay = TimeSpan.FromMilliseconds(1000 / Math.Pow(2, value));
+            }
+        }
+
         public MazeSnapshot LatestSnapshot
         {
             get => model.Positions;
@@ -143,7 +155,6 @@ namespace PonyChallenge.ViewModels
             {
 
                 Model = await ((App)App.Current).PonyMazeService.CreateMaze(model.Width, model.Height, model.PlayerName, model.Difficulty);
-                Debug.WriteLine("Maze created, id: " + Model.Id);
                 createMazeCommand.ChangeCanExecute();
                 LatestSnapshot = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
             }
@@ -195,14 +206,14 @@ namespace PonyChallenge.ViewModels
         }
 
         DateTimeOffset lastMove = DateTimeOffset.Now;
-        TimeSpan minDelay = TimeSpan.FromMilliseconds(1000);
+        TimeSpan minDelay = TimeSpan.FromMilliseconds(500);
 
         bool timerStop = false;
 
         public void StartTick()
         {
             timerStop = false;
-            Device.StartTimer(TimeSpan.FromMilliseconds(200), tick);
+            Device.StartTimer(TimeSpan.FromMilliseconds(50), tick);
         }
 
         public void StopTick()
@@ -215,23 +226,16 @@ namespace PonyChallenge.ViewModels
             if (timerStop)
                 return false;
 
-            try
+            if (MakeRepeatingAutoMoves)
             {
-                if (MakeRepeatingAutoMoves)
+                if (BestNextMove.HasValue)
                 {
-                    if (BestNextMove.HasValue)
+                    if (DateTimeOffset.Now > lastMove + minDelay)
                     {
-                        if (DateTimeOffset.Now > lastMove + minDelay)
-                        {
-                            lastMove = DateTimeOffset.Now;
-                            Device.BeginInvokeOnMainThread(async () => { if (BestNextMove.HasValue) await makeMove(BestNextMove.Value); });
-                        }
+                        lastMove = DateTimeOffset.Now;
+                        Device.BeginInvokeOnMainThread(async () => { if (BestNextMove.HasValue) await makeMove(BestNextMove.Value); });
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Exception in timer " + ex.Message);
             }
 
             return !timerStop;
@@ -251,10 +255,11 @@ namespace PonyChallenge.ViewModels
         async Task makeMove(int direction)
         {
             await ((App)App.Current).PonyMazeService.Move(Model.Id, directionNames[direction]);
-            LatestSnapshot = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
-            if (LatestSnapshot.State != MazeState.Active)
+            MazeSnapshot snap = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
+            if (snap.State != MazeState.Active)
                 MakeRepeatingAutoMoves = false;
             lastMove = DateTimeOffset.Now;
+            LatestSnapshot = snap;
         }
 
         bool canPonyMoveInDirection(int direction)
