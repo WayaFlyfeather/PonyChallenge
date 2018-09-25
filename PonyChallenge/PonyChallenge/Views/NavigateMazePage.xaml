@@ -14,45 +14,32 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <Grid VerticalOptions="Fill">
+        <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Text="MazeID" />
-            <Label Grid.Row="0" Grid.Column="1" Text="{Binding Model.Id}" />
-            <Label Grid.Row="1" Grid.Column="0" Text="Specs" />
-            <Label Grid.Row="1" Grid.Column="1" Text="{Binding Specs}" />
-            <Grid ColumnSpacing="0" RowSpacing="0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" VerticalOptions="Fill">
+            <Grid ColumnSpacing="0" RowSpacing="0" Grid.Row="0" Margin="3" HorizontalOptions="Fill" VerticalOptions="Fill">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="9*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="9*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Row="0" Grid.Column="1" Text="N" Command="{Binding MoveDirectionCommand}" CommandParameter="0" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" HorizontalOptions="Fill" VerticalOptions="Fill" />
-                <Button Grid.Row="1" Grid.Column="0" Text="W" Command="{Binding MoveDirectionCommand}" CommandParameter="3" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" HorizontalOptions="Fill" VerticalOptions="Fill" />
-                <Button Grid.Row="1" Grid.Column="2" Text="E" Command="{Binding MoveDirectionCommand}" CommandParameter="1" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" HorizontalOptions="Fill" VerticalOptions="Fill" />
-                <Button Grid.Row="2" Grid.Column="1" Text="S" Command="{Binding MoveDirectionCommand}" CommandParameter="2" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                <Button Grid.Row="0" Grid.Column="1" Text="N" Command="{Binding MoveDirectionCommand}" CommandParameter="0" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="35" />
+                <Button Grid.Row="1" Grid.Column="0" Text="W" Command="{Binding MoveDirectionCommand}" CommandParameter="3" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" HorizontalOptions="Center" VerticalOptions="Fill" WidthRequest="35"/>
+                <Button Grid.Row="1" Grid.Column="2" Text="E" Command="{Binding MoveDirectionCommand}" CommandParameter="1" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" HorizontalOptions="Center" VerticalOptions="Fill" WidthRequest="35" />
+                <Button Grid.Row="2" Grid.Column="1" Text="S" Command="{Binding MoveDirectionCommand}" CommandParameter="2" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="35" />
                 <Grid Padding="3" Grid.Row="1" Grid.Column="1" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" HorizontalOptions="Fill" VerticalOptions="Fill" >
                     <skia:SKCanvasView x:Name="MazeCanvas" HorizontalOptions="Fill" VerticalOptions="Fill" PaintSurface="OnMazeCanvasPaintSurface" />
                     <skia:SKCanvasView x:Name="CreatureCanvas" HorizontalOptions="Fill" VerticalOptions="Fill" PaintSurface="OnCreatureCanvasPaintSurface" />
                 </Grid>
             </Grid>
-            <!--<Frame Padding="0" OutlineColor="Black" CornerRadius="0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" VerticalOptions="Fill" Margin="3"  BackgroundColor="LightGray">
-                <StackLayout x:Name="TheMaze" Spacing="0" HorizontalOptions="Fill" VerticalOptions="Fill" />
-            </Frame>-->
-            <StackLayout Orientation="Horizontal" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{Binding HasSnapshot}">
+            <StackLayout Orientation="Horizontal" Grid.Row="1" IsVisible="{Binding HasSnapshot}">
                 <Button HorizontalOptions="Start" Text="Quit Maze" Clicked="QuitButton_Clicked" />
                 <Button HorizontalOptions="FillAndExpand" Text="Single Auto Move" Command="{Binding MakeAutoMoveCommand}" />
                 <Button HorizontalOptions="FillAndExpand" Text="Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
@@ -63,7 +50,7 @@
                 </StackLayout>
             </StackLayout>
             
-            <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="2" BackgroundColor="#60A0A0A0" IsVisible="{Binding HasSnapshot, Converter={StaticResource BooleanNegationConverter}}">
+            <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" BackgroundColor="#60A0A0A0" IsVisible="{Binding HasSnapshot, Converter={StaticResource BooleanNegationConverter}}">
                 <Frame OutlineColor="{Binding SelectedPonyName, Converter={StaticResource PonyToPageBackgroundColorConverter}}" CornerRadius="0" BackgroundColor="#40FFFFFF" HorizontalOptions="Center" VerticalOptions="Center">
                     <Grid >
                         <Grid.ColumnDefinitions>
@@ -94,7 +81,7 @@
                             <Label Text="Difficulty" />
                             <Picker ItemsSource="{Binding Difficulties}" SelectedItem="{Binding SelectedDifficulty, Mode=TwoWay}" />
                         </StackLayout>
-                        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding CreateMazeCommand}" Margin="4" Text="Create Maze" HorizontalOptions="Center" />
+                        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding CreateMazeCommand}" Margin="4" Text="A-Maze Me!" HorizontalOptions="Center" />
                     </Grid>
                 </Frame> 
             </Frame>
