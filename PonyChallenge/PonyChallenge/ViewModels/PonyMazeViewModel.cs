@@ -280,6 +280,9 @@ namespace PonyChallenge.ViewModels
 
         async Task makeMove(int direction)
         {
+            if (!canPonyMoveInDirection(direction))
+                return;
+
             try
             {
                 await ((App)App.Current).PonyMazeService.Move(Model.Id, directionNames[direction]);
