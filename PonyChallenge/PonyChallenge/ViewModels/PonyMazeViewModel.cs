@@ -133,6 +133,14 @@ namespace PonyChallenge.ViewModels
             }
         }
 
+
+        private bool unreportedConnectionError = false;
+        public bool UnreportedConnectionError
+        {
+            get => unreportedConnectionError;
+            set => SetProperty(ref unreportedConnectionError, value);
+        }
+
         public bool HasSnapshot => !(LatestSnapshot is null);
 
         public string Specs => String.Format($"{Width},{Height} {SelectedPonyName} ({Difficulty})");
@@ -176,7 +184,9 @@ namespace PonyChallenge.ViewModels
             }
             catch (Exception ex)
             {
+                ResetMaze();
                 Debug.WriteLine("Exception in CreateMaze: " + ex.Message);
+                UnreportedConnectionError = true;
             }
         }
 
@@ -270,12 +280,21 @@ namespace PonyChallenge.ViewModels
 
         async Task makeMove(int direction)
         {
-            await ((App)App.Current).PonyMazeService.Move(Model.Id, directionNames[direction]);
-            MazeSnapshot snap = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
-            if (snap.State != MazeState.Active)
-                MakeRepeatingAutoMoves = false;
-            lastMove = DateTimeOffset.Now;
-            LatestSnapshot = snap;
+            try
+            {
+                await ((App)App.Current).PonyMazeService.Move(Model.Id, directionNames[direction]);
+                MazeSnapshot snap = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
+                if (snap.State != MazeState.Active)
+                    MakeRepeatingAutoMoves = false;
+                lastMove = DateTimeOffset.Now;
+                LatestSnapshot = snap;
+            }
+            catch(Exception ex)
+            {
+                MakeRepeatingAutoMoves=false;
+                Debug.WriteLine("Exception in makeMove: " + ex.Message);
+                UnreportedConnectionError = true;
+            }
         }
 
         bool canPonyMoveInDirection(int direction)

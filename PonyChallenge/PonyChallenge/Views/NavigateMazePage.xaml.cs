@@ -104,6 +104,11 @@ namespace PonyChallenge.Views
             {
                 loadPonyBMP();
             }
+
+            if (String.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(PonyMazeViewModel.UnreportedConnectionError) && vm.UnreportedConnectionError == true)
+            {
+                reportConnectionError();                
+            }
         }
 
         async void OnGameWon()
@@ -120,6 +125,14 @@ namespace PonyChallenge.Views
             await DisplayAlert("Game Over", lostMessage, "Play again");
 
             vm.ResetMaze();
+        }
+
+        async void reportConnectionError()
+        {
+            string connErrorMsg = String.Format("Uh-oh, it seems {0} has lost the connection to The Little Pony Hub... Maybe, if you try again later, you can save {0}?", vm.SelectedPonyName);
+            await DisplayAlert("Problem", connErrorMsg , "OK");
+
+            vm.UnreportedConnectionError = false;
         }
 
         void OnMazeCanvasPaintSurface(object sender, SKPaintSurfaceEventArgs args)
