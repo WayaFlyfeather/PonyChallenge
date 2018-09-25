@@ -34,6 +34,13 @@ namespace PonyChallenge.Views
             base.OnAppearing();
             vm.PropertyChanged += VM_PropertyChanged;
             domokunBMP = loadBitmap("domokun.png");
+            loadPonyBMP();
+            vm.StartTick();
+        }
+
+        void loadPonyBMP()
+        {
+            ponyBMP?.Dispose();
             switch (vm.SelectedPonyName)
             {
                 case "Applejack":
@@ -46,7 +53,6 @@ namespace PonyChallenge.Views
                 default:
                     ponyBMP = loadBitmap("rarity.png"); break;
             }
-            vm.StartTick();
         }
 
         SKBitmap loadBitmap(string filename)
@@ -92,6 +98,11 @@ namespace PonyChallenge.Views
                     OnGameWon();
                 if (vm.HasSnapshot && vm.LatestSnapshot.State == Models.MazeState.Lost)
                     OnGameLost();
+            }
+
+            if (String.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(PonyMazeViewModel.SelectedPonyName))
+            {
+                loadPonyBMP();
             }
         }
 
