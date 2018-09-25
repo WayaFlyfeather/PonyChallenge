@@ -117,7 +117,7 @@ namespace PonyChallenge.Views
         async void OnGameLost()
         {
             string lostMessage = String.Format("Oh no, how unfortunate. {0} was captured by Domo-Kun and will now be tickled! Can you do better next time?", vm.SelectedPonyName);
-            await DisplayAlert("You lost", lostMessage, "Play again");
+            await DisplayAlert("Game Over", lostMessage, "Play again");
 
             vm.ResetMaze();
         }

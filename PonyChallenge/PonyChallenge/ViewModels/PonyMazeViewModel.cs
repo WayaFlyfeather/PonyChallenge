@@ -41,8 +41,7 @@ namespace PonyChallenge.ViewModels
             }
         }
 
-        public List<int> Difficulties { get; } = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        public int SelectedDifficulty
+        public int Difficulty
         {
             get => model.Difficulty;
             set
@@ -136,7 +135,7 @@ namespace PonyChallenge.ViewModels
 
         public bool HasSnapshot => !(LatestSnapshot is null);
 
-        public string Specs => String.Format($"{Width},{Height} {SelectedPonyName} ({SelectedDifficulty})");
+        public string Specs => String.Format($"{Width},{Height} {SelectedPonyName} ({Difficulty})");
 
         public bool IsValid
         {
@@ -144,7 +143,7 @@ namespace PonyChallenge.ViewModels
             {
                 if (String.IsNullOrEmpty(model.PlayerName) || !PonyNames.Contains(model.PlayerName))
                     return false;
-                if (!Difficulties.Contains(model.Difficulty))
+                if (model.Difficulty < 0 || model.Difficulty > 10)
                     return false;
                 if (model.Width < 15 || model.Width > 25)
                     return false;

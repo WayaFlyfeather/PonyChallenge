@@ -8,6 +8,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <conv:BooleanNegationConverter x:Key="BooleanNegationConverter" />
+            <conv:SnappedIntToDoubleConverter x:Key="SnappedIntToDoubleConverter" />
             <conv:MovesPerSecondPowerToSpeedConverter x:Key="MovesPerSecondPowerToSpeedConverter" />
             <conv:PonyToPageBackgroundColorConverter x:Key="PonyToPageBackgroundColorConverter" />
             <conv:PonyToMazeBackgroundColorConverter x:Key="PonyToMazeBackgroundColorConverter" />
@@ -19,7 +20,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid ColumnSpacing="0" RowSpacing="0" Grid.Row="0" Margin="3" HorizontalOptions="Fill" VerticalOptions="Fill">
+            <Grid ColumnSpacing="0" RowSpacing="0" Grid.Row="0" Margin="3, 3, 3, 0" HorizontalOptions="Fill" VerticalOptions="Fill">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -39,11 +40,11 @@
                     <skia:SKCanvasView x:Name="CreatureCanvas" HorizontalOptions="Fill" VerticalOptions="Fill" PaintSurface="OnCreatureCanvasPaintSurface" />
                 </Grid>
             </Grid>
-            <StackLayout Orientation="Horizontal" Grid.Row="1" IsVisible="{Binding HasSnapshot}">
+            <StackLayout Orientation="Horizontal" Grid.Row="1" IsVisible="{Binding HasSnapshot}" Margin="3, 0, 3, 3">
                 <Button HorizontalOptions="Start" Text="Quit Maze" Clicked="QuitButton_Clicked" />
-                <Button HorizontalOptions="FillAndExpand" Text="Single Auto Move" Command="{Binding MakeAutoMoveCommand}" />
-                <Button HorizontalOptions="FillAndExpand" Text="Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
-                <Button HorizontalOptions="FillAndExpand" Text="Stop Repeat Auto Move" IsVisible="{Binding MakeRepeatingAutoMoves}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
+                <Button HorizontalOptions="FillAndExpand" Text="Run &amp; Stop" Command="{Binding MakeAutoMoveCommand}" />
+                <Button HorizontalOptions="FillAndExpand" Text="Run Like The Wind" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
+                <Button HorizontalOptions="FillAndExpand" Text="Stop Running" IsVisible="{Binding MakeRepeatingAutoMoves}" Command="{Binding SwitchRepeatAutoMoveCommand}" />
                 <StackLayout Spacing="0">
                     <Label Text="{Binding MovesPerSecondPower, Converter={StaticResource MovesPerSecondPowerToSpeedConverter}}" FontSize="9"  HorizontalOptions="Center" />
                     <Stepper Minimum="-1" Maximum="3" Value="{Binding MovesPerSecondPower}" />
@@ -60,28 +61,29 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <StackLayout Grid.Row="0 " Grid.Column="0" HorizontalOptions="Center">
+                        <StackLayout Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Padding="4" HorizontalOptions="Center">
+                            <Label Text="Player Name" HorizontalOptions="Center" />
+                            <Picker ItemsSource="{Binding PonyNames}" SelectedItem="{Binding SelectedPonyName, Mode=TwoWay}" HorizontalOptions="Center" />
+                        </StackLayout>
+                        <StackLayout Grid.Row="1" Grid.Column="0" HorizontalOptions="Center">
                             <Label Text="Width" HorizontalOptions="Center" />
                             <Label Text="{Binding Width, Mode=OneWay}" HorizontalOptions="Center" />
                             <Stepper Maximum="25" Minimum="15" Increment="1" Value="{Binding Width, Mode=TwoWay}" HorizontalOptions="Center" />
                         </StackLayout>
-                        <StackLayout Grid.Row="0" Grid.Column="1" HorizontalOptions="Center">
+                        <StackLayout Grid.Row="1" Grid.Column="1" HorizontalOptions="Center">
                             <Label Text="Height" HorizontalOptions="Center" />
                             <Label Text="{Binding Height, Mode=OneWay}" HorizontalOptions="Center"/>
                             <Stepper Maximum="25" Minimum="15" Increment="1" Value="{Binding Height, Mode=TwoWay}" HorizontalOptions="Center"/>
                         </StackLayout>
-                        <StackLayout Grid.Row="1" Grid.Column="0" Padding="4">
-                            <Label Text="Player Name" />
-                            <Picker ItemsSource="{Binding PonyNames}" SelectedItem="{Binding SelectedPonyName, Mode=TwoWay}" />
+                        <StackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Padding="4" HorizontalOptions="Center">
+                            <Label Text="Difficulty" HorizontalOptions="Center" />
+                            <Label Text="{Binding Difficulty}" HorizontalOptions="Center" />
+                            <Slider Maximum="10" Minimum="0" Value="{Binding Difficulty, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" MinimumTrackColor="Black" MaximumTrackColor="DarkGray" HorizontalOptions="Fill"/>
                         </StackLayout>
-                        <StackLayout Grid.Row="1" Grid.Column="1" Padding="4">
-                            <Label Text="Difficulty" />
-                            <Picker ItemsSource="{Binding Difficulties}" SelectedItem="{Binding SelectedDifficulty, Mode=TwoWay}" />
-                        </StackLayout>
-                        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding CreateMazeCommand}" Margin="4" Text="A-Maze Me!" HorizontalOptions="Center" />
+                        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding CreateMazeCommand}" Text="A-Maze Me!" HorizontalOptions="Center" Margin="0, 6, 0, 4" />
                     </Grid>
                 </Frame> 
             </Frame>
