@@ -14,7 +14,6 @@ namespace PonyChallenge
             this.maze = maze;
         }
 
-
         /// <summary>
         /// The algorithm used for finding the best way to move is as follows
         /// 
