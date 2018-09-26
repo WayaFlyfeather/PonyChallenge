@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PonyChallenge
 {
-    public partial class MazeNavigator
+    public class MazeNavigator
     {
         readonly MazeSnapshot maze;
 
@@ -15,6 +15,31 @@ namespace PonyChallenge
         }
 
 
+        /// <summary>
+        /// The algorithm used for finding the best way to move is as follows
+        /// 
+        /// 1. Rule out moving into walls
+        /// 2. Rule out moving into domokun
+        /// 3. If the exit is in one of the spaces, go there (to win)
+        /// 4. Rule out moving into a space one space from domokun
+        /// 5. If there by now is nowhere to go, go to one of the places ruled out last (most likely to be caught)
+        /// 6. Of the remaining directions, find the one leading to the exit in the fewest steps.
+        /// 7. If none does, find the shortest way to a loop in the maze, that is, one with a path connecting back
+        /// 8. If none does, find the one with the most steps to a cul-de-sac. If the domokun is a bit smart, it will
+        ///    follow, and the pony will be caught, but it will get a run for it's money, at least.
+        ///    
+        /// Note: step 6 is partly wasted, as in the mazes served there are only one way to the exit, anyway.
+        ///       And step 7 is completely wasted, as there are no loops in the mazes. It would have been a nice way to
+        ///       outsmart the domokun, though.
+        ///       Step 6, 7 and 8 are accomplished using recursive method calls.
+        ///       
+        ///       When I originally considered the algorithm to use, I had no idea what the mazes would be like.
+        ///       And I imagined them being much more open, with more possibilities, at least in some difficulties.
+        ///       Therefore I also had ideas about deciding whether moving in one direction would be smart, based on whether
+        ///       the domokun could intercept, or another, more roundabout way should be taken. All in all I was somewhat 
+        ///       disappointed in the very limiting design of the mazes.
+        /// </summary>
+        /// <returns>The best direction for a pony to move</returns>
         public byte FindDirection()
         {
             byte?[] ruledOutDirections = new byte?[4];
