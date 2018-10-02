@@ -162,20 +162,20 @@ namespace PonyChallenge.Views
             switch (vm.SelectedPonyName)
             {
                 case "Pinkie Pie":
-                    ponyColor = Color.DeepPink.ToSKColor();
+                    ponyColor = PonyToPageBackgroundColorConverter.PinkiePiePageBackgroundColor.ToSKColor();
                     ponyWallColor = PonyToWallColorConverter.PinkiePieWallColor.ToSKColor();
                     break;
                 case "Applejack":
-                    ponyColor = Color.SandyBrown.ToSKColor();
-                    ponyWallColor = PonyToWallColorConverter.AppleJackWallColor.ToSKColor();
+                    ponyColor = PonyToPageBackgroundColorConverter.ApplejackPageBackgroundColor.ToSKColor();
+                    ponyWallColor = PonyToWallColorConverter.ApplejackWallColor.ToSKColor();
                     break;
                 case "Spike":
-                    ponyColor = Color.LawnGreen.ToSKColor();
+                    ponyColor = PonyToPageBackgroundColorConverter.SpikePageBackgroundColor.ToSKColor();
                     ponyWallColor = PonyToWallColorConverter.SpikeWallColor.ToSKColor();
                     break; 
                 case "Rarity":
                 default:
-                    ponyColor = Color.BlueViolet.ToSKColor();
+                    ponyColor = PonyToPageBackgroundColorConverter.RarityPageBackgroundColor.ToSKColor();
                     ponyWallColor = PonyToWallColorConverter.RarityWallColor.ToSKColor();
                     break;
             }

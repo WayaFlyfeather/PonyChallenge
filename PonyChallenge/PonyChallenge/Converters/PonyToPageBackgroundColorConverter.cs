@@ -8,18 +8,23 @@ namespace PonyChallenge.Converters
 {
     public class PonyToPageBackgroundColorConverter : IValueConverter
     {
+        static public Color RarityPageBackgroundColor { get; } = Color.BlueViolet;
+        static public Color PinkiePiePageBackgroundColor { get; } = Color.DeepPink;
+        static public Color ApplejackPageBackgroundColor { get; } = Color.SandyBrown;
+        static public Color SpikePageBackgroundColor { get; } = Color.LawnGreen;
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             string ponyName = value.ToString();
 
             switch (ponyName)
             {
-                case "Pinkie Pie": return Color.DeepPink;
-                case "Applejack": return Color.SandyBrown;
-                case "Spike": return Color.LawnGreen;
+                case "Pinkie Pie": return PinkiePiePageBackgroundColor;
+                case "Applejack": return ApplejackPageBackgroundColor;
+                case "Spike": return SpikePageBackgroundColor;
                 case "Rarity":
                 default:
-                    return Color.BlueViolet;
+                    return RarityPageBackgroundColor;
             }
         }
 

@@ -10,7 +10,7 @@ namespace PonyChallenge.Converters
     {
         static public Color RarityWallColor { get; } = Color.Black;
         static public Color PinkiePieWallColor { get; } = Color.Black;
-        static public Color AppleJackWallColor { get; } = Color.Black;
+        static public Color ApplejackWallColor { get; } = Color.Black;
         static public Color SpikeWallColor { get; } = Color.Black;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -20,7 +20,7 @@ namespace PonyChallenge.Converters
             switch (ponyName)
             {
                 case "Pinkie Pie": return PinkiePieWallColor;
-                case "Applejack": return AppleJackWallColor;
+                case "Applejack": return ApplejackWallColor;
                 case "Spike": return SpikeWallColor;
                 case "Rarity":
                 default:
