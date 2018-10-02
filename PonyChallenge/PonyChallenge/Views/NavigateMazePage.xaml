@@ -13,6 +13,98 @@
             <conv:PonyToPageBackgroundColorConverter x:Key="PonyToPageBackgroundColorConverter" />
             <conv:PonyToMazeBackgroundColorConverter x:Key="PonyToMazeBackgroundColorConverter" />
             <conv:PonyToWallColorConverter x:Key="PonyToWallColorConverter" />
+
+            <Style x:Key="BaseButtonStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="1" />
+            </Style>
+
+            <Style x:Key="MoveButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+                <Setter Property="Margin" Value="1" />
+            </Style>
+            
+            <Style x:Key="EastWestMoveButtonStyle" TargetType="Button" BasedOn="{StaticResource MoveButtonStyle}">
+                <Setter Property="WidthRequest" Value="40" />
+                <Setter Property="VerticalOptions" Value="Fill" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+            </Style>
+
+            <Style x:Key="NorthSouthMoveButtonStyle" TargetType="Button" BasedOn="{StaticResource MoveButtonStyle}">
+                <Setter Property="HeightRequest" Value="40" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+
+            <Style x:Key="RunButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+            </Style>
+
+            <Style x:Key="QuitButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+                <Setter Property="HorizontalOptions" Value="Start" />
+            </Style>
+
+            <Style x:Key="SkiaCanvasViewStyle" TargetType="skia:SKCanvasView">
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="VerticalOptions" Value="Fill" />
+            </Style>
+
+            <Style x:Key="BottomRowStackLayoutStyle" TargetType="StackLayout">
+                <Setter Property="Orientation" Value="Horizontal" />
+                <Setter Property="Margin" Value="3, 0, 3, 3" />
+            </Style>
+
+            <Style x:Key="SpeedSliderStackLayoutStyle" TargetType="StackLayout">
+                <Setter Property="Orientation" Value="Vertical" />
+                <Setter Property="Spacing" Value="0" />
+            </Style>
+
+            <Style x:Key="ControlStackLayoutStyle" TargetType="StackLayout">
+                <Setter Property="HorizontalOptions" Value="Center" />
+            </Style>
+
+            <Style x:Key="FullWidthControlStackLayoutStyle" TargetType="StackLayout" BasedOn="{StaticResource ControlStackLayoutStyle}">
+                <Setter Property="Padding" Value="4" />
+            </Style>
+
+            <Style x:Key="PonyNameStackLayoutStyle" TargetType="StackLayout" BasedOn="{StaticResource FullWidthControlStackLayoutStyle}">
+                <Setter Property="WidthRequest" Value="220" />
+            </Style>
+
+            <Style x:Key="ControlLabelStyle" TargetType="Label">
+                <Setter Property="HorizontalOptions" Value="Center" />
+            </Style>
+            
+            <Style x:Key="SpeedSliderLabelStyle" TargetType="Label" BasedOn="{StaticResource ControlLabelStyle}">
+                <Setter Property="FontSize" Value="9" />
+            </Style>
+
+            <Style x:Key="PonyNamePickerStyle" TargetType="Picker">
+                <Setter Property="WidthRequest" Value="180" />
+            </Style>
+            
+            <Style x:Key="BaseSliderStyle" TargetType="Slider">
+                <Setter Property="MinimumTrackColor" Value="Black" />
+                <Setter Property="MaximumTrackColor" Value="#202020" />
+            </Style>
+
+            <Style x:Key="DimensionSelectionSliderStyle" TargetType="Slider" BasedOn="{StaticResource BaseSliderStyle}">
+                <Setter Property="WidthRequest" Value="100" />
+            </Style>
+
+            <Style x:Key="DifficultySelectionSliderStyle" TargetType="Slider" BasedOn="{StaticResource BaseSliderStyle}">
+                <Setter Property="WidthRequest" Value="150" />
+            </Style>
+
+            <Style x:Key="MazeDefinitionOuterFrameStyle" TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="#60A0A0A0" />
+            </Style>
+            
+            <Style x:Key="MazeDefinitionInnerFrameStyle" TargetType="Frame">
+                <Setter Property="CornerRadius" Value="0" />
+                <Setter Property="BackgroundColor" Value="#E0E0E0E0" />
+                <Setter Property="WidthRequest" Value="220" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Padding>
@@ -37,13 +129,13 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Row="0" Grid.Column="1" Text="N" Command="{Binding MoveDirectionCommand}" CommandParameter="0" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" BorderRadius="1" HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="40" />
-                <Button Grid.Row="1" Grid.Column="0" Text="W" Command="{Binding MoveDirectionCommand}" CommandParameter="3" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" BorderRadius="1" HorizontalOptions="Center" VerticalOptions="Fill" WidthRequest="40"/>
-                <Button Grid.Row="1" Grid.Column="2" Text="E" Command="{Binding MoveDirectionCommand}" CommandParameter="1" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" BorderRadius="1" HorizontalOptions="Center" VerticalOptions="Fill" WidthRequest="40" />
-                <Button Grid.Row="2" Grid.Column="1" Text="S" Command="{Binding MoveDirectionCommand}" CommandParameter="2" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" BorderRadius="1" HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="40" />
+                <Button Grid.Row="0" Grid.Column="1" Text="N" Command="{Binding MoveDirectionCommand}" CommandParameter="0" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" Style="{StaticResource NorthSouthMoveButtonStyle}"/>
+                <Button Grid.Row="1" Grid.Column="0" Text="W" Command="{Binding MoveDirectionCommand}" CommandParameter="3" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" Style="{StaticResource EastWestMoveButtonStyle}"/>
+                <Button Grid.Row="1" Grid.Column="2" Text="E" Command="{Binding MoveDirectionCommand}" CommandParameter="1" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" Style="{StaticResource EastWestMoveButtonStyle}" />
+                <Button Grid.Row="2" Grid.Column="1" Text="S" Command="{Binding MoveDirectionCommand}" CommandParameter="2" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" Style="{StaticResource NorthSouthMoveButtonStyle}"/>
                 <Grid Padding="3" Grid.Row="1" Grid.Column="1" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" HorizontalOptions="Fill" VerticalOptions="Fill" >
-                    <skia:SKCanvasView x:Name="MazeCanvas" HorizontalOptions="Fill" VerticalOptions="Fill" PaintSurface="OnMazeCanvasPaintSurface" />
-                    <skia:SKCanvasView x:Name="CreatureCanvas" HorizontalOptions="Fill" VerticalOptions="Fill" PaintSurface="OnCreatureCanvasPaintSurface">
+                    <skia:SKCanvasView x:Name="MazeCanvas" Style="{StaticResource SkiaCanvasViewStyle}" PaintSurface="OnMazeCanvasPaintSurface" />
+                    <skia:SKCanvasView x:Name="CreatureCanvas" Style="{StaticResource SkiaCanvasViewStyle}" PaintSurface="OnCreatureCanvasPaintSurface">
                         <skia:SKCanvasView.GestureRecognizers>
                             <SwipeGestureRecognizer Direction="Up" Command="{Binding MoveDirectionCommand}" CommandParameter="0" />
                             <SwipeGestureRecognizer Direction="Left" Command="{Binding MoveDirectionCommand}" CommandParameter="3" />
@@ -53,19 +145,19 @@
                     </skia:SKCanvasView>
                 </Grid>
             </Grid>
-            <StackLayout Orientation="Horizontal" Grid.Row="1" IsVisible="{Binding HasSnapshot}" Margin="3, 0, 3, 3">
-                <Button HorizontalOptions="Start" Text="Quit Maze" Clicked="QuitButton_Clicked" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" BorderRadius="1"/>
-                <Button HorizontalOptions="FillAndExpand" Text="Run &amp; Stop" Command="{Binding MakeAutoMoveCommand}" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" BorderRadius="1" />
-                <Button HorizontalOptions="FillAndExpand" Text="Run Like The Wind" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" Command="{Binding SwitchRepeatAutoMoveCommand}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" BorderRadius="1" />
-                <Button HorizontalOptions="FillAndExpand" Text="Stop Running" IsVisible="{Binding MakeRepeatingAutoMoves}" Command="{Binding SwitchRepeatAutoMoveCommand}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}" BorderRadius="1" />
-                <StackLayout Spacing="0">
-                    <Label Text="{Binding MovesPerSecondPower, Converter={StaticResource MovesPerSecondPowerToSpeedConverter}}" FontSize="9"  HorizontalOptions="Center" />
-                    <Slider Maximum="3" Minimum="-1" Value="{Binding MovesPerSecondPower, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" MinimumTrackColor="Black" MaximumTrackColor="#202020" />
+            <StackLayout Grid.Row="1" IsVisible="{Binding HasSnapshot}" Style="{StaticResource BottomRowStackLayoutStyle}">
+                <Button Style="{StaticResource QuitButtonStyle}" Text="Quit Maze" Clicked="QuitButton_Clicked" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}"/>
+                <Button Style="{StaticResource RunButtonStyle}" Text="Run &amp; Stop" Command="{Binding MakeAutoMoveCommand}" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}"/>
+                <Button Style="{StaticResource RunButtonStyle}" Text="Run Like The Wind" IsVisible="{Binding MakeRepeatingAutoMoves, Converter={StaticResource BooleanNegationConverter}}" Command="{Binding SwitchRepeatAutoMoveCommand}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}"/>
+                <Button Style="{StaticResource RunButtonStyle}" Text="Stop Running" IsVisible="{Binding MakeRepeatingAutoMoves}" Command="{Binding SwitchRepeatAutoMoveCommand}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}"/>
+                <StackLayout Style="{StaticResource SpeedSliderStackLayoutStyle}">
+                    <Label Text="{Binding MovesPerSecondPower, Converter={StaticResource MovesPerSecondPowerToSpeedConverter}}" Style="{StaticResource SpeedSliderLabelStyle}"/>
+                    <Slider Maximum="3" Minimum="-1" Value="{Binding MovesPerSecondPower, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource BaseSliderStyle}"/>
                 </StackLayout>
             </StackLayout>
             
-            <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" BackgroundColor="#60A0A0A0" IsVisible="{Binding HasSnapshot, Converter={StaticResource BooleanNegationConverter}}">
-                <Frame OutlineColor="{Binding SelectedPonyName, Converter={StaticResource PonyToPageBackgroundColorConverter}}" CornerRadius="0" BackgroundColor="#E0E0E0E0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="220">
+            <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource MazeDefinitionOuterFrameStyle}" IsVisible="{Binding HasSnapshot, Converter={StaticResource BooleanNegationConverter}}">
+                <Frame OutlineColor="{Binding SelectedPonyName, Converter={StaticResource PonyToPageBackgroundColorConverter}}" Style="{StaticResource MazeDefinitionInnerFrameStyle}" >
                     <ScrollView>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -79,24 +171,24 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <ActivityIndicator Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="4" IsVisible="{Binding IsBusy}" IsRunning="{Binding IsBusy}" HorizontalOptions="Fill" VerticalOptions="Fill" />
-                            <StackLayout Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Padding="4" HorizontalOptions="Center" WidthRequest="220">
-                                <Label Text="Player Name" HorizontalOptions="Center" />
-                                <Picker ItemsSource="{Binding PonyNames}" SelectedItem="{Binding SelectedPonyName, Mode=TwoWay}" WidthRequest="180" />
+                            <StackLayout Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource PonyNameStackLayoutStyle}">
+                                <Label Text="Player Name" Style="{StaticResource ControlLabelStyle}"/>
+                                <Picker ItemsSource="{Binding PonyNames}" SelectedItem="{Binding SelectedPonyName, Mode=TwoWay}" Style="{StaticResource PonyNamePickerStyle}" />
                             </StackLayout>
-                            <StackLayout Grid.Row="1" Grid.Column="0" HorizontalOptions="Center">
-                                <Label Text="Width" HorizontalOptions="Center" />
-                                <Label Text="{Binding Width, Mode=OneWay}" HorizontalOptions="Center" />
-                                <Slider Maximum="25" Minimum="15" Value="{Binding Width, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" MinimumTrackColor="Black" MaximumTrackColor="#202020" WidthRequest="100"/>
+                            <StackLayout Grid.Row="1" Grid.Column="0" Style="{StaticResource ControlStackLayoutStyle}">
+                                <Label Text="Width" Style="{StaticResource ControlLabelStyle}"/>
+                                <Label Text="{Binding Width, Mode=OneWay}" Style="{StaticResource ControlLabelStyle}"/>
+                                <Slider Maximum="25" Minimum="15" Value="{Binding Width, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource DimensionSelectionSliderStyle}"/>
                             </StackLayout>
-                            <StackLayout Grid.Row="1" Grid.Column="1" HorizontalOptions="Center">
-                                <Label Text="Height" HorizontalOptions="Center" />
-                                <Label Text="{Binding Height, Mode=OneWay}" HorizontalOptions="Center"/>
-                                <Slider Maximum="25" Minimum="15" Value="{Binding Height, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" MinimumTrackColor="Black" MaximumTrackColor="#202020"  WidthRequest="100"/>
+                            <StackLayout Grid.Row="1" Grid.Column="1" Style="{StaticResource ControlStackLayoutStyle}">
+                                <Label Text="Height" Style="{StaticResource ControlLabelStyle}"/>
+                                <Label Text="{Binding Height, Mode=OneWay}" Style="{StaticResource ControlLabelStyle}"/>
+                                <Slider Maximum="25" Minimum="15" Value="{Binding Height, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource DimensionSelectionSliderStyle}"/>
                             </StackLayout>
-                            <StackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Padding="4" HorizontalOptions="Center">
-                                <Label Text="Difficulty" HorizontalOptions="Center" />
-                                <Label Text="{Binding Difficulty}" HorizontalOptions="Center" />
-                                <Slider Maximum="10" Minimum="0" Value="{Binding Difficulty, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" MinimumTrackColor="Black" MaximumTrackColor="#202020"  WidthRequest="150"/>
+                            <StackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource FullWidthControlStackLayoutStyle}">
+                                <Label Text="Difficulty" Style="{StaticResource ControlLabelStyle}"/>
+                                <Label Text="{Binding Difficulty}" Style="{StaticResource ControlLabelStyle}"/>
+                                <Slider Maximum="10" Minimum="0" Value="{Binding Difficulty, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource DifficultySelectionSliderStyle}"/>
                             </StackLayout>
                             <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding CreateMazeCommand}" Text="A-Maze-Me!" HorizontalOptions="Center" Margin="0, 6, 0, 4" />
                         </Grid>
