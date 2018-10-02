@@ -78,6 +78,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
+                            <ActivityIndicator Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="4" IsVisible="{Binding IsBusy}" IsRunning="{Binding IsBusy}" HorizontalOptions="Fill" VerticalOptions="Fill" />
                             <StackLayout Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Padding="4" HorizontalOptions="Center" WidthRequest="220">
                                 <Label Text="Player Name" HorizontalOptions="Center" />
                                 <Picker ItemsSource="{Binding PonyNames}" SelectedItem="{Binding SelectedPonyName, Mode=TwoWay}" WidthRequest="180" />

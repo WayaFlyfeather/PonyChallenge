@@ -99,6 +99,15 @@ namespace PonyChallenge.ViewModels
             }
         }
 
+
+        private bool isBusy;
+        public bool IsBusy
+        {
+            get => isBusy;
+            set => SetProperty(ref isBusy, value);
+        }
+
+
         public MazeSnapshot LatestSnapshot
         {
             get => model.Positions;
@@ -177,7 +186,7 @@ namespace PonyChallenge.ViewModels
         {
             try
             {
-
+                IsBusy = true;
                 Model = await ((App)App.Current).PonyMazeService.CreateMaze(model.Width, model.Height, model.PlayerName, model.Difficulty);
                 createMazeCommand.ChangeCanExecute();
                 LatestSnapshot = await ((App)App.Current).PonyMazeService.GetSnapshot(Model.Id);
@@ -187,6 +196,10 @@ namespace PonyChallenge.ViewModels
                 ResetMaze();
                 Debug.WriteLine("Exception in CreateMaze: " + ex.Message);
                 UnreportedConnectionError = true;
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 
