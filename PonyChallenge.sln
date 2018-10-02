@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PonyChallenge.iOS", "PonyCh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PonyChallenge.UWP", "PonyChallenge\PonyChallenge.UWP\PonyChallenge.UWP.csproj", "{A7E3B6EF-882C-4E7E-A9C1-49FD1F4226BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PonyChallenge", "PonyChallenge\PonyChallenge\PonyChallenge.csproj", "{B05F7061-2A62-4023-A730-64048A86C496}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PonyChallenge", "PonyChallenge\PonyChallenge\PonyChallenge.csproj", "{B05F7061-2A62-4023-A730-64048A86C496}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
