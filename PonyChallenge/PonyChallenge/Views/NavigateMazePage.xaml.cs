@@ -13,6 +13,7 @@ using SkiaSharp.Views.Forms;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
+using PonyChallenge.Converters;
 
 namespace PonyChallenge.Views
 {
@@ -157,14 +158,26 @@ namespace PonyChallenge.Views
             float offsetY = (info.Height - (locationUnit * vm.Height)) / 2f;
 
             SKColor ponyColor;
+            SKColor ponyWallColor;
             switch (vm.SelectedPonyName)
             {
-                case "Pinkie Pie": ponyColor = Color.DeepPink.ToSKColor(); break;
-                case "Applejack": ponyColor = Color.SandyBrown.ToSKColor(); break;
-                case "Spike": ponyColor = Color.LawnGreen.ToSKColor(); break; 
+                case "Pinkie Pie":
+                    ponyColor = Color.DeepPink.ToSKColor();
+                    ponyWallColor = PonyToWallColorConverter.PinkiePieWallColor.ToSKColor();
+                    break;
+                case "Applejack":
+                    ponyColor = Color.SandyBrown.ToSKColor();
+                    ponyWallColor = PonyToWallColorConverter.AppleJackWallColor.ToSKColor();
+                    break;
+                case "Spike":
+                    ponyColor = Color.LawnGreen.ToSKColor();
+                    ponyWallColor = PonyToWallColorConverter.SpikeWallColor.ToSKColor();
+                    break; 
                 case "Rarity":
                 default:
-                    ponyColor = Color.BlueViolet.ToSKColor(); break;
+                    ponyColor = Color.BlueViolet.ToSKColor();
+                    ponyWallColor = PonyToWallColorConverter.RarityWallColor.ToSKColor();
+                    break;
             }
 
             using (SKPaint wallStroke = new SKPaint
