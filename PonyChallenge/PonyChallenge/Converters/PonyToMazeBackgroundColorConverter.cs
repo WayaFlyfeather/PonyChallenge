@@ -8,10 +8,10 @@ namespace PonyChallenge.Converters
 {
     public class PonyToMazeBackgroundColorConverter : IValueConverter
     {
-        static public Color RarityMazeBackgroundColor { get; } = Color.LightCoral;
-        static public Color PinkiePieMazeBackgroundColor { get; } = Color.LightGreen;
-        static public Color ApplejackMazeBackgroundColor { get; } = Color.LightBlue;
-        static public Color SpikeMazeBackgroundColor { get; } = Color.LightPink;
+        static public Color RarityMazeBackgroundColor { get; } = Color.FromHex("38C14C");
+        static public Color PinkiePieMazeBackgroundColor { get; } = Color.FromHex("D2EA67");
+        static public Color ApplejackMazeBackgroundColor { get; } = Color.FromHex("F377FF");
+        static public Color SpikeMazeBackgroundColor { get; } = Color.FromHex("FF3D5D");
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

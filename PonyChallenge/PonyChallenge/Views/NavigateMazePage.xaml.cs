@@ -183,7 +183,7 @@ namespace PonyChallenge.Views
             using (SKPaint wallStroke = new SKPaint
             {
                 Style = SKPaintStyle.Stroke,
-                Color = Color.Black.ToSKColor(),
+                Color = ponyWallColor,
                 StrokeWidth = WallWidth,
                 StrokeCap = SKStrokeCap.Square
             })

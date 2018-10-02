@@ -8,10 +8,10 @@ namespace PonyChallenge.Converters
 {
     public class PonyToPageBackgroundColorConverter : IValueConverter
     {
-        static public Color RarityPageBackgroundColor { get; } = Color.BlueViolet;
-        static public Color PinkiePiePageBackgroundColor { get; } = Color.DeepPink;
-        static public Color ApplejackPageBackgroundColor { get; } = Color.SandyBrown;
-        static public Color SpikePageBackgroundColor { get; } = Color.LawnGreen;
+        static public Color RarityPageBackgroundColor { get; } = Color.FromHex("5F50A2");
+        static public Color PinkiePiePageBackgroundColor { get; } = Color.FromHex("ED458D");
+        static public Color ApplejackPageBackgroundColor { get; } = Color.FromHex("FFF797");
+        static public Color SpikePageBackgroundColor { get; } = Color.FromHex("B18FC2");
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
