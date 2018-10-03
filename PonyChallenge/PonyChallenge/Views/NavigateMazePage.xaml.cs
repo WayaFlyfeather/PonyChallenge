@@ -193,23 +193,24 @@ namespace PonyChallenge.Views
                 Color=ponyColor
             })
             {
+                //double outer rectangle
+                canvas.DrawRect(offsetX, offsetY, vm.Width * locationUnit, vm.Height * locationUnit, wallStroke);
                 canvas.DrawRect(offsetX - WallWidth, offsetY - WallWidth, vm.Width * locationUnit + WallWidth * 2, vm.Height * locationUnit + WallWidth * 2, wallStroke);
 
                 for (int y = 0; y < vm.Height; y++)
                 {
                     for (int x = 0; x < vm.Width; x++)
                     {
-                        if (vm.LatestSnapshot.Locations[x, y].NorthWall)
-                            canvas.DrawLine(new SKPoint() { X = offsetX + (x * locationUnit), Y = offsetY + (y * locationUnit) }, new SKPoint() { X = offsetX + ((x + 1) * locationUnit), Y = offsetY + (y * locationUnit) }, wallStroke);
-                        if (vm.LatestSnapshot.Locations[x, y].EastWall)
+                        //It's enough to only draw walls for two sides (North or South and East or West), as the outer walls are already drawn.
+
+                        if (x != vm.Width - 1 && vm.LatestSnapshot.Locations[x, y].EastWall)
                             canvas.DrawLine(new SKPoint() { X = offsetX + ((x + 1) * locationUnit), Y = offsetY + (y * locationUnit) }, new SKPoint() { X = offsetX + ((x + 1) * locationUnit), Y = offsetY + ((y + 1) * locationUnit) }, wallStroke);
-                        if (vm.LatestSnapshot.Locations[x, y].SouthWall)
+                        if (y != vm.Height - 1 && vm.LatestSnapshot.Locations[x, y].SouthWall)
                             canvas.DrawLine(new SKPoint() { X = offsetX + (x * locationUnit), Y = offsetY + ((y + 1) * locationUnit) }, new SKPoint() { X = offsetX + ((x + 1) * locationUnit), Y = offsetY + ((y + 1) * locationUnit) }, wallStroke);
-                        if (vm.LatestSnapshot.Locations[x, y].WestWall)
-                            canvas.DrawLine(new SKPoint() { X = offsetX + (x * locationUnit), Y = offsetY + (y * locationUnit) }, new SKPoint() { X = offsetX + (x * locationUnit), Y = offsetY + ((y + 1) * locationUnit) }, wallStroke);
                     }
                 }
 
+                //Draw the exit
                 canvas.DrawRect(offsetX + (vm.LatestSnapshot.Exit.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.Exit.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, exitFill);
             }           
         }
