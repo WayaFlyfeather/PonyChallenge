@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="TwelatifiedSystems.PonyTjalnz" Publisher="CN=D8811D81-A186-4CB7-9798-76FC7C1FE3D6" Version="1.2.0.0" />
+  <Identity Name="TwelatifiedSystems.PonyTjalnz" Publisher="CN=D8811D81-A186-4CB7-9798-76FC7C1FE3D6" Version="1.2.1.0" />
   <mp:PhoneIdentity PhoneProductId="a2cee4c7-a4c5-4a23-91c8-df48fa9d1fb6" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Pony Tjalnz</DisplayName>
