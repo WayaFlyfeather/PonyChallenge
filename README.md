@@ -1,7 +1,7 @@
-#PonyChallenge
-###(aka Pony Tjalnz)
+# PonyChallenge
+### (aka Pony Tjalnz)
 
-This is a solution for the [My Little Code Challenge as posed by Trustpilot] (https://ponychallenge.trustpilot.com/index.html). In short, the challenge is to use a web service provided by Trustpilot to create a maze, and using the service to move the pony to safety, avoiding the domokun.
+This is a solution for the [My Little Code Challenge as posed by Trustpilot](https://ponychallenge.trustpilot.com/index.html). In short, the challenge is to use a web service provided by Trustpilot to create a maze, and using the service to move the pony to safety, avoiding the domokun.
 
 (The description of the challenge and the service is included in the project, in case the link should be taken down at some point, as PDFs: the [challenge description](PonyChallenge/PonyChallenge/ChallengeDescription/SaveThePony.pdf) and the [API](PonyChallenge/PonyChallenge/ChallengeDescription/PonyAPI.pdf).)
 
