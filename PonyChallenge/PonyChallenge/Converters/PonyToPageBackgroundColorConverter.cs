@@ -13,10 +13,8 @@ namespace PonyChallenge.Converters
         static public Color ApplejackPageBackgroundColor { get; } = Color.FromHex("FFF797");
         static public Color SpikePageBackgroundColor { get; } = Color.FromHex("B18FC2");
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        static public Color GetPageBackgroundColorForPony(string ponyName)
         {
-            string ponyName = value.ToString();
-
             switch (ponyName)
             {
                 case "Pinkie Pie": return PinkiePiePageBackgroundColor;
@@ -27,6 +25,9 @@ namespace PonyChallenge.Converters
                     return RarityPageBackgroundColor;
             }
         }
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+            => GetPageBackgroundColorForPony(value.ToString());
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

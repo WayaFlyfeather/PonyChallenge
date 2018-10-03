@@ -13,10 +13,8 @@ namespace PonyChallenge.Converters
         static public Color ApplejackWallColor { get; } = Color.FromHex("0A3325");
         static public Color SpikeWallColor { get; } = Color.FromHex("02330C");
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        static public Color GetWallColorForPony(string ponyName)
         {
-            string ponyName = value.ToString();
-
             switch (ponyName)
             {
                 case "Pinkie Pie": return PinkiePieWallColor;
@@ -27,6 +25,9 @@ namespace PonyChallenge.Converters
                     return RarityWallColor;
             }
         }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            => GetWallColorForPony(value.ToString());
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

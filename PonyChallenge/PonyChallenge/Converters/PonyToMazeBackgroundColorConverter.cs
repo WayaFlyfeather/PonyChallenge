@@ -13,10 +13,8 @@ namespace PonyChallenge.Converters
         static public Color ApplejackMazeBackgroundColor { get; } = Color.FromHex("F377FF");
         static public Color SpikeMazeBackgroundColor { get; } = Color.FromHex("FF3D5D");
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        static public Color GetMazeBackgroundColorForPony(string ponyName)
         {
-            string ponyName = value.ToString();
-
             switch (ponyName)
             {
                 case "Pinkie Pie": return PinkiePieMazeBackgroundColor;
@@ -27,6 +25,9 @@ namespace PonyChallenge.Converters
                     return RarityMazeBackgroundColor;
             }
         }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            => GetMazeBackgroundColorForPony(value.ToString());
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

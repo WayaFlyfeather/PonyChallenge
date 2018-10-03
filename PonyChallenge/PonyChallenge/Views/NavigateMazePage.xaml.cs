@@ -152,45 +152,21 @@ namespace PonyChallenge.Views
             float locationUnit = Math.Min((info.Width - WallWidth * 2) / (float)vm.Width, (info.Height - WallWidth * 2) / (float)vm.Height);
             float halfLocationUnit = locationUnit / 2f;
             float quarterLocationUnit = locationUnit / 4f;
-            float eighthLocationUnit = locationUnit / 8f;
 
             float offsetX = (info.Width - (locationUnit * vm.Width)) / 2f;
             float offsetY = (info.Height - (locationUnit * vm.Height)) / 2f;
 
-            SKColor ponyColor;
-            SKColor ponyWallColor;
-            switch (vm.SelectedPonyName)
-            {
-                case "Pinkie Pie":
-                    ponyColor = PonyToPageBackgroundColorConverter.PinkiePiePageBackgroundColor.ToSKColor();
-                    ponyWallColor = PonyToWallColorConverter.PinkiePieWallColor.ToSKColor();
-                    break;
-                case "Applejack":
-                    ponyColor = PonyToPageBackgroundColorConverter.ApplejackPageBackgroundColor.ToSKColor();
-                    ponyWallColor = PonyToWallColorConverter.ApplejackWallColor.ToSKColor();
-                    break;
-                case "Spike":
-                    ponyColor = PonyToPageBackgroundColorConverter.SpikePageBackgroundColor.ToSKColor();
-                    ponyWallColor = PonyToWallColorConverter.SpikeWallColor.ToSKColor();
-                    break; 
-                case "Rarity":
-                default:
-                    ponyColor = PonyToPageBackgroundColorConverter.RarityPageBackgroundColor.ToSKColor();
-                    ponyWallColor = PonyToWallColorConverter.RarityWallColor.ToSKColor();
-                    break;
-            }
-
             using (SKPaint wallStroke = new SKPaint
             {
                 Style = SKPaintStyle.Stroke,
-                Color = ponyWallColor,
+                Color = PonyToWallColorConverter.GetWallColorForPony(vm.SelectedPonyName).ToSKColor(),
                 StrokeWidth = WallWidth,
                 StrokeCap = SKStrokeCap.Square
             })
             using (SKPaint exitFill = new SKPaint
             {
                 Style=SKPaintStyle.Fill,
-                Color=ponyColor
+                Color=PonyToPageBackgroundColorConverter.GetPageBackgroundColorForPony(vm.SelectedPonyName).ToSKColor()
             })
             {
                 //double outer rectangle
@@ -229,16 +205,11 @@ namespace PonyChallenge.Views
                 return;
 
             float locationUnit = Math.Min((info.Width - WallWidth * 2) / (float)vm.Width, (info.Height - WallWidth * 2) / (float)vm.Height);
-            float halfLocationUnit = locationUnit / 2f;
-            float quarterLocationUnit = locationUnit / 4f;
             float eighthLocationUnit = locationUnit / 8f;
 
             float offsetX = (info.Width - (locationUnit * vm.Width)) / 2f;
             float offsetY = (info.Height - (locationUnit * vm.Height)) / 2f;
 
-            //                canvas.DrawRect(offsetX + (vm.LatestSnapshot.PonyPlacement.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.PonyPlacement.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, ponyFill);
-
-            //                canvas.DrawRect(offsetX + (vm.LatestSnapshot.DomokunPlacement.X * locationUnit) + quarterLocationUnit, offsetY + (vm.LatestSnapshot.DomokunPlacement.Y * locationUnit) + quarterLocationUnit, halfLocationUnit, halfLocationUnit, domokunFill);
             canvas.DrawBitmap(ponyBMP, new SKRect { Left = offsetX + (vm.LatestSnapshot.PonyPlacement.X * locationUnit) + eighthLocationUnit, Top = offsetY + (vm.LatestSnapshot.PonyPlacement.Y * locationUnit) + eighthLocationUnit, Right = offsetX + ((vm.LatestSnapshot.PonyPlacement.X + 1) * locationUnit) - eighthLocationUnit, Bottom = offsetY + ((vm.LatestSnapshot.PonyPlacement.Y + 1) * locationUnit) - eighthLocationUnit }, null);
             canvas.DrawBitmap(domokunBMP, new SKRect { Left = offsetX + (vm.LatestSnapshot.DomokunPlacement.X * locationUnit) + eighthLocationUnit, Top = offsetY + (vm.LatestSnapshot.DomokunPlacement.Y * locationUnit) + eighthLocationUnit, Right = offsetX + ((vm.LatestSnapshot.DomokunPlacement.X + 1) * locationUnit) - eighthLocationUnit, Bottom = offsetY + ((vm.LatestSnapshot.DomokunPlacement.Y + 1) * locationUnit) - eighthLocationUnit }, null);
         }
