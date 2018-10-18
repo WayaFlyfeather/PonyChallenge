@@ -31,6 +31,10 @@ namespace PonyChallenge.UWP.Effects
                     {
                         formsSlider.ThumbToolTipValueConverter = new WindowsToXFormsValueConverter(thumbToolTipEffect.ThumbToolTipValueConverter);
                     }
+                    else if (!String.IsNullOrEmpty(thumbToolTipEffect.StringFormat))
+                    {
+                        formsSlider.ThumbToolTipValueConverter = new StringFormatConverter(thumbToolTipEffect.StringFormat);
+                    }
                     break;
             }
         }
