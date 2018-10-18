@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:conv="clr-namespace:PonyChallenge.Converters"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
+             xmlns:fx="clr-namespace:PonyChallenge.Effects"
              BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToPageBackgroundColorConverter}}"
              x:Class="PonyChallenge.Views.NavigateMazePage">
     <ContentPage.Resources>
@@ -152,7 +153,11 @@
                 <Button Style="{StaticResource RunButtonStyle}" Text="Stop Running" IsVisible="{Binding MakeRepeatingAutoMoves}" Command="{Binding SwitchRepeatAutoMoveCommand}" BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToMazeBackgroundColorConverter}}" BorderColor="{Binding SelectedPonyName, Converter={StaticResource PonyToWallColorConverter}}"/>
                 <StackLayout Style="{StaticResource SpeedSliderStackLayoutStyle}">
                     <Label Text="{Binding MovesPerSecondPower, Converter={StaticResource MovesPerSecondPowerToSpeedConverter}}" Style="{StaticResource SpeedSliderLabelStyle}"/>
-                    <Slider Maximum="3" Minimum="-1" Value="{Binding MovesPerSecondPower, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource BaseSliderStyle}"/>
+                    <Slider Maximum="3" Minimum="-1" Value="{Binding MovesPerSecondPower, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource BaseSliderStyle}">
+                        <Slider.Effects>
+                            <fx:ThumbToolTipEffect Suppressed="True" />
+                        </Slider.Effects>
+                    </Slider>
                 </StackLayout>
             </StackLayout>
             
