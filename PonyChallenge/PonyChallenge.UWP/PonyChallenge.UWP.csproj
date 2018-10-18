@@ -99,6 +99,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Converters\WindowsToXFormsValueConverter.cs" />
     <Compile Include="Effects\ThumbToolTipEffectImpl.cs" />
     <Compile Include="MainPage.xaml.cs">
