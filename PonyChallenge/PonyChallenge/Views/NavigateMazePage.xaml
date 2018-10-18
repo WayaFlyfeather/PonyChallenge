@@ -183,17 +183,29 @@
                             <StackLayout Grid.Row="1" Grid.Column="0" Style="{StaticResource ControlStackLayoutStyle}">
                                 <Label Text="Width" Style="{StaticResource ControlLabelStyle}"/>
                                 <Label Text="{Binding Width, Mode=OneWay}" Style="{StaticResource ControlLabelStyle}"/>
-                                <Slider Maximum="25" Minimum="15" Value="{Binding Width, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource DimensionSelectionSliderStyle}"/>
+                                <Slider Maximum="25" Minimum="15" Value="{Binding Width, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource DimensionSelectionSliderStyle}">
+                                    <Slider.Effects>
+                                        <fx:ThumbToolTipEffect Suppressed="True" />
+                                    </Slider.Effects>
+                                </Slider>
                             </StackLayout>
                             <StackLayout Grid.Row="1" Grid.Column="1" Style="{StaticResource ControlStackLayoutStyle}">
                                 <Label Text="Height" Style="{StaticResource ControlLabelStyle}"/>
                                 <Label Text="{Binding Height, Mode=OneWay}" Style="{StaticResource ControlLabelStyle}"/>
-                                <Slider Maximum="25" Minimum="15" Value="{Binding Height, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource DimensionSelectionSliderStyle}"/>
+                                <Slider Maximum="25" Minimum="15" Value="{Binding Height, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource DimensionSelectionSliderStyle}">
+                                    <Slider.Effects>
+                                        <fx:ThumbToolTipEffect Suppressed="True" />
+                                    </Slider.Effects>
+                                </Slider>
                             </StackLayout>
                             <StackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource FullWidthControlStackLayoutStyle}">
                                 <Label Text="Difficulty" Style="{StaticResource ControlLabelStyle}"/>
                                 <Label Text="{Binding Difficulty}" Style="{StaticResource ControlLabelStyle}"/>
-                                <Slider Maximum="10" Minimum="0" Value="{Binding Difficulty, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource DifficultySelectionSliderStyle}"/>
+                                <Slider Maximum="10" Minimum="0" Value="{Binding Difficulty, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource DifficultySelectionSliderStyle}">
+                                    <Slider.Effects>
+                                        <fx:ThumbToolTipEffect Suppressed="True" />
+                                    </Slider.Effects>
+                                </Slider>
                             </StackLayout>
                             <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding CreateMazeCommand}" Text="A-Maze-Me!" HorizontalOptions="Center" Margin="0, 6, 0, 4" />
                         </Grid>
