@@ -155,7 +155,7 @@
                     <Label Text="{Binding MovesPerSecondPower, Converter={StaticResource MovesPerSecondPowerToSpeedConverter}}" Style="{StaticResource SpeedSliderLabelStyle}"/>
                     <Slider Maximum="3" Minimum="-1" Value="{Binding MovesPerSecondPower, Mode=TwoWay, Converter={StaticResource SnappedIntToDoubleConverter}}" Style="{StaticResource BaseSliderStyle}">
                         <Slider.Effects>
-                            <fx:ThumbToolTipEffect Suppressed="False" ThumbToolTipValueConverter="{StaticResource MovesPerSecondPowerToSpeedConverter}" />
+                            <fx:ThumbToolTipEffect ThumbToolTipValueConverter="{StaticResource MovesPerSecondPowerToSpeedConverter}" />
                         </Slider.Effects>
                     </Slider>
                 </StackLayout>

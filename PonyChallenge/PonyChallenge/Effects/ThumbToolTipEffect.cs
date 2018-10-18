@@ -7,7 +7,7 @@ namespace PonyChallenge.Effects
 {
     public class ThumbToolTipEffect : RoutingEffect
     {
-        public bool Suppressed { get; set; } = true;
+        public bool Suppressed { get; set; } = false;
         public IValueConverter ThumbToolTipValueConverter { get; set; } = null;
 
         public ThumbToolTipEffect() : base("JonRLevy.ThumbToolTipEffect")
