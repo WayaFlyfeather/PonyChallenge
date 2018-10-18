@@ -18,7 +18,7 @@ namespace PonyChallenge.UWP.Converters
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            string format = parameter is null ? StringFormat : parameter.ToString();
+            string format = parameter is string && !String.IsNullOrEmpty((string)parameter) ? parameter.ToString() : StringFormat;
             return String.Format(format, value);
         }
 
