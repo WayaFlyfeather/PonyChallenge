@@ -10,7 +10,7 @@ namespace PonyChallenge.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            int pow = (int)value;
+            int pow = System.Convert.ToInt32(value);
             switch (pow)
             {
                 case -1: return "2 sec";
