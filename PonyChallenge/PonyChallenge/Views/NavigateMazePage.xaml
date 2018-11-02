@@ -4,6 +4,7 @@
              xmlns:conv="clr-namespace:PonyChallenge.Converters"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              xmlns:fx="clr-namespace:PonyChallenge.Effects"
+             xmlns:trg="clr-namespace:PonyChallenge.TriggerActions"
              BackgroundColor="{Binding SelectedPonyName, Converter={StaticResource PonyToPageBackgroundColorConverter}}"
              x:Class="PonyChallenge.Views.NavigateMazePage">
     <ContentPage.Resources>
@@ -161,7 +162,17 @@
                 </StackLayout>
             </StackLayout>
             
-            <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource MazeDefinitionOuterFrameStyle}" IsVisible="{Binding HasSnapshot, Converter={StaticResource BooleanNegationConverter}}">
+            <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource MazeDefinitionOuterFrameStyle}">
+                <Frame.Triggers>
+                    <DataTrigger TargetType="Frame" Binding="{Binding HasSnapshot}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <trg:FadeOutTriggerAction />
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <trg:FadeInTriggerAction />
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </Frame.Triggers>
                 <Frame OutlineColor="{Binding SelectedPonyName, Converter={StaticResource PonyToPageBackgroundColorConverter}}" Style="{StaticResource MazeDefinitionInnerFrameStyle}" >
                     <ScrollView>
                         <Grid>
