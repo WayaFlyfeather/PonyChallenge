@@ -97,6 +97,16 @@
             </Style>
 
             <Style x:Key="MazeDefinitionOuterFrameStyle" TargetType="Frame">
+                <Style.Triggers>
+                    <DataTrigger TargetType="Frame" Binding="{Binding HasSnapshot}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <trg:FadeOutTriggerAction />
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <trg:FadeInTriggerAction />
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </Style.Triggers>
                 <Setter Property="BackgroundColor" Value="#60A0A0A0" />
             </Style>
             
@@ -161,18 +171,8 @@
                     </Slider>
                 </StackLayout>
             </StackLayout>
-            
+
             <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource MazeDefinitionOuterFrameStyle}">
-                <Frame.Triggers>
-                    <DataTrigger TargetType="Frame" Binding="{Binding HasSnapshot}" Value="True">
-                        <DataTrigger.EnterActions>
-                            <trg:FadeOutTriggerAction />
-                        </DataTrigger.EnterActions>
-                        <DataTrigger.ExitActions>
-                            <trg:FadeInTriggerAction />
-                        </DataTrigger.ExitActions>
-                    </DataTrigger>
-                </Frame.Triggers>
                 <Frame OutlineColor="{Binding SelectedPonyName, Converter={StaticResource PonyToPageBackgroundColorConverter}}" Style="{StaticResource MazeDefinitionInnerFrameStyle}" >
                     <ScrollView>
                         <Grid>
